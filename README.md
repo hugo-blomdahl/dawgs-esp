@@ -2,7 +2,7 @@
 The main repo for the code of the embedded system(s).
 
 ## Code standard
-Functions and variables should be named using the camelCase standard: `myFunction(int myInput)`. Every function should at least have a brief description of what it does and how it works. It is a good idea to comment author(s) of functions as well. 
+Files should start with small letters. Functions and variables should be named using the camelCase standard: `myFunction(int myInput)`. Every function should at least have a brief description of what it does and how it works. It is a good idea to comment author(s) of functions as well. 
 
 Do not put all your code in the main file, call it from there instead.
 
