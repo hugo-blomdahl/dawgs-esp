@@ -1,15 +1,19 @@
-#include "include/communication.h"
+#include "communication.h"
 #include <stdint.h>
 
-int sendMsg(uint8_t* address, std::string message){
+Comms::Comms(){
+    uint8_t selfAddress[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+}
+
+int Comms::sendMsg(uint8_t* address, std::string message){
     return 0;
 }
 
-void broadcastMsg(){
+void Comms::broadcastMsg(){
     return;
 }
 
-void initCommunication(){
+void Comms::initCommunication(){
     //wait for random amount of time? so not everyone starts at the same time?
     return;
 }
