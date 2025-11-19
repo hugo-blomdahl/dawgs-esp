@@ -44,10 +44,7 @@ void rotate(int wheelRotation){
         //standby();
     }
 }
-void calculateRotation(){
-    //beräknar rotationen på hjulen?
-    //vanlig DC-motor med två kablar, ingen encoder?
-}
+
 void moveForward(){
     //förflyttas framåt
     //LW_A 1
