@@ -13,11 +13,11 @@
 
 int motorSpeed = 0;
 
-void setSpeed(int speed){
+void Movement::setSpeed(int speed){
     //sätter hastigheten
     //motorSpeed = speed; //?
 }
-void rotate(int wheelRotation){
+void Movement::rotate(int wheelRotation){
     //roterar vänster eller höger hjul beroende på parameter
         if(wheelRotation > 0){
         //roterar till höger
@@ -45,7 +45,7 @@ void rotate(int wheelRotation){
     }
 }
 
-void moveForward(){
+void Movement::moveForward(){
     //förflyttas framåt
     //LW_A 1
     //LW_B 0
@@ -56,7 +56,7 @@ void moveForward(){
     //R_PMW motorSpeed
 
 }
-void moveBackward(){
+void Movement::moveBackward(){
     //förflyttas backåt
     //LW_A 0
     //LW_B 1
@@ -67,7 +67,7 @@ void moveBackward(){
     //R_PMW motorSpeed
 
 }
-void standby(){
+void Movement::standby(){
     //står stilla
     //LW_A 0
     //LW_B 0
