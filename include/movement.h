@@ -3,8 +3,8 @@
 #include <string>
 class Movement {
     public:
-        void setSpeed(uint8_t* speed);
-        void rotate(uint8_t* wheelRotation);
+        void setSpeed(int speed);
+        void rotate(int wheelRotation);
         void calculateRotation();
         void moveForward();
         void moveBackward();
