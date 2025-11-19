@@ -11,7 +11,7 @@
 #define LEFT_PWM  5
 #define RIGHT_PWM 6
 
-uint8_t motorSpeed = 0;
+int motorSpeed = 0;
 
 void setSpeed(int speed){
     //sätter hastigheten
