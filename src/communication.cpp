@@ -1,4 +1,4 @@
-#include "communication.h"
+#include "communication.hpp"
 #include <stdint.h>
 
 Comms::Comms(){
