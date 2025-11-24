@@ -43,6 +43,6 @@ void ActivityPlanner::assignRoute(uint8_t* address, std::vector<point>* route){
 
 }
 
-void ActivityPlanner::sendLog(std::string* log){
+void ActivityPlanner::sendLog(std::string log){
 
 }
