@@ -12,8 +12,8 @@ Energy::Energy() {} // Constructor for the Energy class
 void Energy::begin() { // Method to initialize ADC settings
 }
 
-Energy::Status Energy::read() { // Method to read battery status
-    Status batteryLevel;
+Energy::BatteryStatus Energy::read() { // Method to read battery status
+    BatteryStatus batteryLevel;
     batteryLevel.voltage = readVoltage();
     return batteryLevel;
 }
