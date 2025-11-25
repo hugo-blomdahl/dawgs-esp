@@ -1,1 +1,1 @@
-void app_main() {}
+extern "C" void app_main() {}
