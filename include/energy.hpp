@@ -8,20 +8,20 @@
 
 class Energy {
 public:
-    
+    struct BatteryStatus { // Struct to hold battery status information
+        float voltage;
+        float percentage;
+        float timeRemaining;
+    };
     Energy(); // Constructor declaration
     void begin(); // Method to initialize the battery monitoring
-    Status read(); // Method to read the battery status
+    BatteryStatus read(); // Method to read the battery status
 
 private:
 
     float readVoltage(); // Method to read the current voltage of the battery
 
-    struct BatteryStatus { // Struct to hold battery status information
-    float voltage;
-    float percentage;
-    float timeRemaining;
-    };
+    
 };
 
 #endif // ENERGY_HPP
