@@ -3,13 +3,15 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 class ActivityPlanner {
     public: 
 
-    ActivityPlanner();                                                  //the stace machine
-    void sendLog(std::string log);                                     //function to send logs, is this correct parameter format for strings  
-    
+    ActivityPlanner();               //constructor                                       
+    void state_machine_();           //the stace machine         
+    void sendLog(std::string log);   //function to send logs, is this correct parameter format for strings  
+
     enum States {
         chargeBattery,              //go to charging station and charge
         alarm,                      //the node alarms to a server
@@ -20,7 +22,6 @@ class ActivityPlanner {
         idle                        //either idle or is somehow broken or is lost
     };
 
-    private:
     struct point {
         int x;              //x coordinate
         int y;              //y coordinate
@@ -28,8 +29,13 @@ class ActivityPlanner {
         bool isThere;       //is the artwork still there
     };
 
-    std::vector<point> route;
+    struct node{
+        uint8_t macAddress; 
+        bool isLeader;
+    };
 
+    private:
+    void processMsg();
     std::vector<point> createRoute();                                   //function to create route, what kind of return variable?????
     void assignRoute(uint8_t* address, std::vector<point>* route);      //function to assign route, check how the address works  
 

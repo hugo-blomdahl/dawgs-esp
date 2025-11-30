@@ -1,14 +1,27 @@
-#include "activityPlanner.h"
+#include "activityPlanner.hpp"
+#include "energy.hpp"
 
 ActivityPlanner::States state = ActivityPlanner::States::idle;
+
+bool isLeader = false;
+bool leaderExists = false;
+
+std::vector<ActivityPlanner::point> route;
+std::vector<ActivityPlanner::node> nodeFriends;
+std::list<std::string> messages; 
 
 
 ActivityPlanner::ActivityPlanner(){
     
+}
+
+void ActivityPlanner::state_machine_(){
+    processMsg();
+    
 
     switch (state){
         case chargeBattery: //go to charging station and charge
-
+            
             break;
         case alarm: //the node alarms to a server
 
@@ -47,4 +60,21 @@ void ActivityPlanner::assignRoute(uint8_t* address, std::vector<point>* route){
 
 void ActivityPlanner::sendLog(std::string log){
 
+}
+
+void processMsg(){
+    while(!messages.empty()){
+        std::string message = messages.front(); 
+        messages.pop_front();
+        char delimiter = ';';
+        std::string messageType = message.substr(0,messageType.find(delimiter));
+
+        if(messageType == "newNode"){
+            std::string macAddressStr = message.substr(1,messageType.find(delimiter));
+            uint8_t macAddress = stoi(macAddressStr);
+
+            ActivityPlanner::node newNode = {macAddress, false};
+            nodeFriends.push_back(newNode);
+        }
+    }
 }
