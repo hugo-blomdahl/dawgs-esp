@@ -4,8 +4,6 @@
 //
 class Movement {
     private:
-        float x = 0; //position x
-        float y = 0; //position y
         float angle = 0; //rotation i grader
         int motorSpeed = 0;
 
@@ -16,5 +14,4 @@ class Movement {
         void moveForward();
         void moveBackward();
         void standby();
-        void getCoordinate();
 };

@@ -57,36 +57,33 @@ void Movement::rotate(float wheelRotationInDegree){
     else {
         //vinkel okej eller något är fel
     }
+    std::cout << "Angle: " << angle << std::endl;
 }
 
 void Movement::moveForward(){
-    //förflyttas framåt
-    //LW_A 1
-    //LW_B 0
-
-    //RW_A 1
-    //RW_B 0
-    float rad = angle * M_PI / 180; //omvandlar grader till radian
     if(motorSpeed > 0){
-        x += motorSpeed * std::cos(rad); 
-        y += motorSpeed * std::sin(rad);
+        //förflyttas framåt
+        //LW_A 1
+        //LW_B 0
+    
+        //RW_A 1
+        //RW_B 0
+        std::cout << "Forward: " << motorSpeed << std::endl;
     }else{
         standby();
     }
 }
 
 void Movement::moveBackward(){
-    //förflyttas backåt
-    //LW_A 0
-    //LW_B 1
-
-    //RW_A 0
-    //RW_B 1
-    float rad = angle * M_PI / 180; //omvandlar grader till radian
     
     if(motorSpeed > 0){
-        x -= motorSpeed * std::cos(rad);
-        y -= motorSpeed * std::sin(rad);
+        //förflyttas backåt
+        //LW_A 0
+        //LW_B 1
+    
+        //RW_A 0
+        //RW_B 1
+        std::cout << "Backward: " << motorSpeed << std::endl;
     }else{
         standby();
     }
@@ -99,12 +96,5 @@ void Movement::standby(){
     //RW_A 0
     //RW_B 0
     motorSpeed = 0;
-    
-}
-
-void Movement::getCoordinate() {
-    //print(x);
-    //print(y);
-    //print(angle);
-    std::cout << "x: " << std::floor(x) << " y: " << std::floor(y) << " Angle: " << angle << std::endl;
+    std::cout << "Standby" << std::endl;
 }
