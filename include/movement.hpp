@@ -10,7 +10,6 @@ class Movement {
     public:
         void setSpeed(int speedInPercent);
         void rotate(float wheelRotationInDegree);
-        void calculateRotation();
         void moveForward();
         void moveBackward();
         void standby();
