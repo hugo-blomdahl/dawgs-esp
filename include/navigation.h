@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 
 class Navigation{
@@ -6,11 +7,10 @@ class Navigation{
     private:
 
         static const int MAX_ROUTE_LEN = 16;      // max antal stopp i en rutt
-        static const int MAX_QR_ID_LEN = 16;      // max längd på ett QR-id typ "monaLisa"
         int  routeLength;      
         int  currentTargetIndex;  
 
-        char routeIDs[MAX_ROUTE_LEN][MAX_QR_ID_LEN];
+        std::string routeIDs[MAX_ROUTE_LEN];
         float coordinates[2];
         float headingRad;
         
@@ -33,10 +33,10 @@ class Navigation{
 
     public:
     Navigation();
-    void getCoordinates(float coords[2]) const; // förväntar oss en array med 2 floats (x & y kordinater )
+    void calibrateFromQR(const std::string& qrId); 
     float getHeadingDeg() const;  // för logg/UI
-
-    void updateRoute(const char* route[], int length);
+    void getCoordinates(float coords[2]) const;
+    void updateRoute(const std::string route[], int length);
 
 
 
