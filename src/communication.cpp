@@ -3,44 +3,20 @@
 uint8_t Comms::selfAddress[6] = {0};
 const char* Comms::TAG_COMMS = "Comms";
 
-Comms::Comms(){
+Comms::Comms() {
+    // Remove all the WiFi init code - it's now in app_main
+    // Just do ESP-NOW specific initialization
 
-        esp_err_t err;
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    err = esp_wifi_init(&cfg);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG_COMMS, "esp_wifi_init failed: %s", esp_err_to_name(err));
-        return;
-    }
-
-    err = esp_wifi_set_storage(WIFI_STORAGE_RAM);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG_COMMS, "esp_wifi_set_storage failed: %s", esp_err_to_name(err));
-        return;
-    }
-
-    err = esp_wifi_set_mode(WIFI_MODE_STA);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG_COMMS, "esp_wifi_set_mode failed: %s", esp_err_to_name(err));
-        return;
-    }
-
-    err = esp_wifi_start();
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG_COMMS, "esp_wifi_start failed: %s", esp_err_to_name(err));
-        return;
-    }
-
-    err = esp_now_init();
+    esp_err_t err = esp_now_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG_COMMS, "esp_now_init failed: %s", esp_err_to_name(err));
         return;
     }
-     uint8_t mac[6];
+
+    uint8_t mac[6];
     if (esp_read_mac(mac, ESP_MAC_WIFI_STA) == ESP_OK) {
         ESP_LOGI(TAG_COMMS, "Self MAC: %02X:%02X:%02X:%02X:%02X:%02X",
                  mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
         for(int i=0; i<6; i++){
             selfAddress[i] = mac[i];
         }
@@ -50,6 +26,7 @@ Comms::Comms(){
 
     ESP_LOGI(TAG_COMMS, "ESP-NOW initialized");
 }
+
 
 int Comms::sendMsg(uint8_t* address, std::string message){
     {
