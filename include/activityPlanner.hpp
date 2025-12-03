@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <esp_timer.h>
 
 class ActivityPlanner {
     public: 
@@ -19,7 +20,7 @@ class ActivityPlanner {
         createAndAssignRoute,       //the node is leader which creates and assignsroutes
         routeComplete,              //the node is finished with a route and requests a new route
         performRoute,               //the node follows a route and performs its routine tasks
-        idle                        //either idle or is somehow broken or is lost
+        idle,                       //either idle or is somehow broken or is lost
     };
 
     struct point {
@@ -29,9 +30,15 @@ class ActivityPlanner {
         bool isThere;       //is the artwork still there
     };
 
-    struct node{
+    struct nodeFriend{
         uint8_t macAddress; 
+        float percentage; 
         bool isLeader;
+    };
+
+    struct message {
+        uint8_t MACaddress;
+        std::string message;
     };
 
     private:
