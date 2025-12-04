@@ -30,9 +30,10 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Global WiFi initialized");
 
     Comms comms;
+    comms.broadcastMsg("hello world!");
 
-    TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
-    tcpClient.start();
+    //TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
+    //tcpClient.start();
 
     ESP_LOGI(TAG, "All components started");
 
