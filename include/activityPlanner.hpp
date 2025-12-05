@@ -3,11 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <list>
+#include <esp_timer.h>
 
 class ActivityPlanner {
     public: 
 
-    ActivityPlanner();                                                  //the stace machine
+    ActivityPlanner();               //constructor                                       
+    void state_machine_();           //the stace machine  
     void sendLog(std::string log);                                     //function to send logs, is this correct parameter format for strings  
     
     enum States {
@@ -20,18 +23,22 @@ class ActivityPlanner {
         idle                        //either idle or is somehow broken or is lost
     };
 
-    private:
-    struct point {
-        int x;              //x coordinate
-        int y;              //y coordinate
-        bool checked;       //have the node been here
-        bool isThere;       //is the artwork still there
+    struct nodeFriend{
+        uint8_t macAddress[6]; 
+        float percentage; 
+        bool isLeader;
     };
 
-    std::vector<point> route;
+    struct message {
+        uint8_t macAddress[6];
+        std::string message;
+    };
 
-    std::vector<point> createRoute();                                   //function to create route, what kind of return variable?????
-    void assignRoute(uint8_t* address, std::vector<point>* route);      //function to assign route, check how the address works  
+    private:
+
+    void processMsg();
+    void createRoute(std::string* route[]);                                   //function to create route, what kind of return variable?????
+    void assignRoute(uint8_t* address, std::string* route[]);      //function to assign route, check how the address works  
 
 };
 
