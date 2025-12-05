@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include "esp_log.h"
 
 class Navigation{
 
@@ -8,21 +8,18 @@ class Navigation{
 
         static const int MAX_ROUTE_LEN = 16;      // max antal stopp i en rutt
         int  routeLength;      
-        int  currentTargetIndex;  
+        int  currentTargetIndex;
+        std::string lastId = "-1";
+        static const char* TAG_NAVI;
 
         std::string routeIDs[MAX_ROUTE_LEN];
         float coordinates[2];
         float headingRad;
         
         
-        void initGyroCalibration();
         void calibrateFromQR(const char* qrId);
-        void readGyro();
-        void readEncoders();
-        void readAccelerometer(); 
         
 
-        // void fusionPos(?, time interval)  // sensor fusion mellan gyro + enkodrar 
         // kanske ha en getConfidenceValue(); // updateConfidence ??
 
         // void setRout()
