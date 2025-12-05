@@ -6,7 +6,7 @@
 
 #define UART_RX_PORT    UART_NUM_1
 #define UART_RX_BAUD    115200
-#define UART_RX_PIN     16
+#define UART_RX_PIN     5
 #define UART_RX_BUF_SZ  1024
 #define READ_CHUNK_SZ   256
 
