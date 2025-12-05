@@ -84,7 +84,6 @@ void ActivityPlanner::state_machine_(){
     }
 }
 
-
 void ActivityPlanner::createRoute(std::string* route[]){
     
 }

@@ -38,7 +38,6 @@ class ActivityPlanner {
     void processMsg();
     void createRoute(std::string* route[]);                       //function to create route, what kind of return variable?????
     void assignRoute(uint8_t* address, std::string route[]);      //function to assign route, check how the address works  
-
 };
 
 #endif
