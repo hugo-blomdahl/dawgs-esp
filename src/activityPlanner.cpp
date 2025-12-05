@@ -18,7 +18,7 @@ bool alarmed = false;
 bool isStartUp = true;
 
 // state createAndAssignRoute
-std::list<uint8_t> routeRequests;
+std::list<uint8_t*> routeRequests;
 std::list<ActivityPlanner::message> messages;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
 
@@ -98,13 +98,9 @@ void processMsg(){
     while(!messages.empty()){
         ActivityPlanner::message message = messages.front();    // pops the first message from the list
         std::string messageStr = message.message;               // saves the message data
-        uint8_t senderMacAddress = message.MACaddress;                // saves the receiver data
-        messages.pop_front();                                   // removes the first message from the list
 
-        std::printf(messageStr.c_str());
         char delimiter = ';';                                   
         std::string messageType = messageStr.substr(0,messageType.find(delimiter)); // gets the message type
-
         if(messageType == "NN"){ // New Node
             
         } else if(messageType == "RC"){ // Route Complete
@@ -121,8 +117,9 @@ void processMsg(){
 
         } else if(messageType == "RL"){ // Reject new Leader (proposed leader receives)
             
-        } else if(messageType == "NL") { // New Leader
+        } else if(messageType == "NL"){ // New Leader
 
         }
+        messages.pop_front();           // removes the first message from the list
     }
 }

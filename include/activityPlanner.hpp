@@ -24,13 +24,13 @@ class ActivityPlanner {
     };
 
     struct nodeFriend{
-        uint8_t macAddress; 
+        uint8_t macAddress[6]; 
         float percentage; 
         bool isLeader;
     };
 
     struct message {
-        uint8_t MACaddress;
+        uint8_t macAddress[6];
         std::string message;
     };
 
