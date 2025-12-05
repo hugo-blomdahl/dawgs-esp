@@ -1,6 +1,7 @@
 #include "activityPlanner.hpp"
 #include "energy.hpp"
 #include "communication.hpp"
+#include "map.json"
 
 ActivityPlanner::States state = ActivityPlanner::States::idle;
 Comms* communication;
@@ -14,7 +15,6 @@ bool performingRoute = false; // changes when route is done
 // state alarm
 bool alarmed = false;
 
-
 // start up / assingNewLeader
 bool isStartUp = true;
 
@@ -22,8 +22,6 @@ bool isStartUp = true;
 std::list<uint8_t> routeRequests;
 std::list<ActivityPlanner::message> messages;
 
-
-std::vector<ActivityPlanner::point> route;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
 
 ActivityPlanner::ActivityPlanner(){
@@ -87,13 +85,11 @@ void ActivityPlanner::state_machine_(){
 }
 
 
-std::vector<ActivityPlanner::point> ActivityPlanner::createRoute(){
-    std::vector<point> assignedRoute;
-
-    return assignedRoute;
+void ActivityPlanner::createRoute(std::string* route[]){
+    
 }
 
-void ActivityPlanner::assignRoute(uint8_t* address, std::vector<point> route){
+void ActivityPlanner::assignRoute(uint8_t* address, std::string route[]){
     
 }
 
@@ -108,6 +104,7 @@ void processMsg(){
         uint8_t senderMacAddress = message.MACaddress;                // saves the receiver data
         messages.pop_front();                                   // removes the first message from the list
 
+        std::printf(messageStr.c_str());
         char delimiter = ';';                                   
         std::string messageType = messageStr.substr(0,messageType.find(delimiter)); // gets the message type
 

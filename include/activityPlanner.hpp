@@ -23,13 +23,6 @@ class ActivityPlanner {
         idle,                       //either idle or is somehow broken or is lost
     };
 
-    struct point {
-        int x;              //x coordinate
-        int y;              //y coordinate
-        bool checked;       //have the node been here
-        bool isThere;       //is the artwork still there
-    };
-
     struct nodeFriend{
         uint8_t macAddress; 
         float percentage; 
@@ -43,8 +36,8 @@ class ActivityPlanner {
 
     private:
     void processMsg();
-    std::vector<point> createRoute();                                   //function to create route, what kind of return variable?????
-    void assignRoute(uint8_t* address, std::vector<point> route);      //function to assign route, check how the address works  
+    void createRoute(std::string* route[]);                       //function to create route, what kind of return variable?????
+    void assignRoute(uint8_t* address, std::string route[]);      //function to assign route, check how the address works  
 
 };
 
