@@ -44,7 +44,7 @@ class ActivityPlanner {
     private:
     void processMsg();
     std::vector<point> createRoute();                                   //function to create route, what kind of return variable?????
-    void assignRoute(uint8_t* address, std::vector<point>* route);      //function to assign route, check how the address works  
+    void assignRoute(uint8_t* address, std::vector<point> route);      //function to assign route, check how the address works  
 
 };
 
