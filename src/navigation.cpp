@@ -1,6 +1,7 @@
 #include "navigation.h"
 #include <string.h>   
 #include <cmath>  
+#include <iostream>
 
 Navigation::Navigation()
 : routeLength(0),
@@ -32,6 +33,7 @@ void Navigation::calibrateFromQR(const std::string& qrId){ //strukturera om så 
         
     } else {
         // oväntat QR avläst, kanske loggas? 
+        std::cout << qrId << std::endl;
     } 
 
 }
