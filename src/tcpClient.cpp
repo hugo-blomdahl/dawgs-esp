@@ -149,6 +149,23 @@ void TcpClient::clientTask() {
             continue;
         }
 
+        uint8_t mac[6];
+        esp_wifi_get_mac(WIFI_IF_STA, mac);
+        
+        char macStr[20];
+        // Format MAC as XX:XX:XX:XX:XX:XX followed by newline
+        snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X\n",
+                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+        ESP_LOGI(TAG, "Sending Handshake: %s", macStr);
+        int sent = send(sock, macStr, strlen(macStr), 0);
+        
+        if (sent < 0) {
+             ESP_LOGE(TAG, "Failed to send MAC handshake");
+             close(sock);
+             continue;
+        }
+
         while (1) {
             int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
 

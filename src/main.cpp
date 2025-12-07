@@ -31,8 +31,8 @@ extern "C" void app_main(void) {
 
     Comms comms;
 
-    TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
-    tcpClient.start();
+    TcpClient* tcpClient = new TcpClient("ASUS_20_slow", "Steadily8638", "192.168.0.199", 8089);
+    tcpClient->start();
 
     ESP_LOGI(TAG, "All components started");
 
