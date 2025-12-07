@@ -8,12 +8,24 @@
 #include "esp_now.h"
 #include "esp_mac.h"
 #include "nvs_flash.h"
+#include <esp_random.h>
+#include <list>
+#include <mutex>
+
+struct Message {
+        uint8_t macAddress[6];
+        std::string message;
+    };
+
 
 class Comms {
     private:
+        static Comms* instance;
         static uint8_t selfAddress[6];
         static const char* TAG_COMMS;
         static void onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len);
+        std::list<Message>* messages = nullptr;
+        static std::mutex listMutex;
         
 // Total: 15 bytes header + up to 235 bytes payload
 
@@ -29,5 +41,6 @@ class Comms {
         };
         int sendMsg(uint8_t* address, std::string message);
         void broadcastMsg(std::string message);
-        
+        void setMessageList(std::list<Message>* messageList);
+        static std::mutex& getMutex();
 };
