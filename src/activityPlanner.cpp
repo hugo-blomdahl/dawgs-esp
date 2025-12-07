@@ -129,6 +129,7 @@ void ActivityPlanner::processMsg(){
         } else if(messageType == "NL"){ // New Leader
 
         }
+        std::cout << "Processed message: " << messageStr << std::endl;
         messages.pop_front();           // removes the first message from the list
     }
 }

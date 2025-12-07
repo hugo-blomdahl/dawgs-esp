@@ -33,6 +33,7 @@ extern "C" void app_main(void) {
     Comms comms;
     comms.broadcastMsg("hello world!");
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
+    
 
     //TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
     //tcpClient.start();
@@ -40,6 +41,7 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG, "All components started");
 
     while(true) {
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        activityPlanner->state_machine_();
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
