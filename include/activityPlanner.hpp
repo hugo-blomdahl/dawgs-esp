@@ -5,11 +5,12 @@
 #include <vector>
 #include <list>
 #include <esp_timer.h>
+#include "communication.hpp"
 
 class ActivityPlanner {
     public: 
 
-    ActivityPlanner();               //constructor                                       
+    ActivityPlanner(Comms* comms);               //constructor                                       
     void state_machine_();           //the stace machine  
     void sendLog(std::string log);                                     //function to send logs, is this correct parameter format for strings  
     

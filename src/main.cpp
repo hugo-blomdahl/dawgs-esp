@@ -1,5 +1,6 @@
 #include <iostream>
 #include "communication.hpp"
+#include "activityPlanner.hpp"
 #include "tcpClient.hpp"
 #include "nvs_flash.h"
 #include "esp_log.h"
@@ -31,6 +32,7 @@ extern "C" void app_main(void) {
 
     Comms comms;
     comms.broadcastMsg("hello world!");
+    ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
 
     //TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
     //tcpClient.start();

@@ -1,6 +1,5 @@
 #include "activityPlanner.hpp"
 #include "energy.hpp"
-#include "communication.hpp"
 
 ActivityPlanner::States state = ActivityPlanner::States::idle;
 Comms* communication;
@@ -22,10 +21,8 @@ std::list<uint8_t*> routeRequests;
 std::list<ActivityPlanner::message> messages;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
 
-ActivityPlanner::ActivityPlanner(){
-    communication = new Comms();
-    communication->initCommunication();
-
+ActivityPlanner::ActivityPlanner(Comms* aComms){
+    communication = aComms;
     energy = new Energy();
     energy->begin();
 }
