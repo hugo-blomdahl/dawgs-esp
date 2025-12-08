@@ -84,7 +84,7 @@ void Navigation::calibrateFromQR(const std::string& qrId){ //strukturera om så 
     //this is happening in task. be careful!!!!
     if (qrId.empty()) return;
 
-    ESP_LOGI(TAG_NAVI, "Read qr code: %s", qrId);
+    ESP_LOGI(TAG_NAVI, "Read qr code: %s", qrId.c_str());
 
     if (qrId == lastId){
         //korrigera?
@@ -107,6 +107,7 @@ void Navigation::calibrateFromQR(const std::string& qrId){ //strukturera om så 
     } else {
         // oväntat QR avläst, kanske loggas? 
         ESP_LOGI(TAG_NAVI, "Unknown qr code!");
+
     } 
 
 }
