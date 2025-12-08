@@ -1,43 +1,48 @@
 #pragma once
 #include <string>
+#include <vector>
 
 
-class Navigation{
+struct SimpleNode {
+    float x;
+    float y;
+    std::string qrId;
+};
+
+
+class Navigation {
 
     private:
 
         static const int MAX_ROUTE_LEN = 16;      // max antal stopp i en rutt
-        int  routeLength;      
-        int  currentTargetIndex;  
+        int  routeLength;       
+        int  currentTargetIndex;   
 
         std::string routeIDs[MAX_ROUTE_LEN];
         float coordinates[2];
         float headingRad;
         
+    
+        std::vector<SimpleNode> mapNodes;
         
-        void initGyroCalibration();
-        void calibrateFromQR(const char* qrId);
-        void readGyro();
-        void readEncoders();
-        void readAccelerometer(); 
+    
+        std::string lastId; 
+
+        void updateRouteProgress(const std::string& qrId);
         
-
-        // void fusionPos(?, time interval)  // sensor fusion mellan gyro + enkodrar 
-        // kanske ha en getConfidenceValue(); // updateConfidence ??
-
-        // void setRout()
         
-
-
-
+        
 
     public:
-    Navigation();
-    void calibrateFromQR(const std::string& qrId); 
-    float getHeadingDeg() const;  // för logg/UI
-    void getCoordinates(float coords[2]) const;
-    void updateRoute(const std::string route[], int length);
+        Navigation();
 
+        bool loadEmbeddedMap();
+        
+        bool loadMapFromJson(const std::string& jsonString);
 
-
+        void calibrateFromQR(int qrIndex); 
+        
+        float getHeadingDeg() const;  
+        void getCoordinates(float coords[2]) const;
+        void updateRoute(const std::string route[], int length);
 };

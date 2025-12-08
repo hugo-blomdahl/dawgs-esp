@@ -11,6 +11,14 @@
       "heading": 0.0,
       "type": "nav",
       "room": "1"
+    },  
+    {
+      "id": "dinMamma",
+      "x": 5,
+      "y": 3.5,
+      "heading": 90.0,
+      "type": "skulptur",
+      "room": "1"
     }   
   ]
 }
