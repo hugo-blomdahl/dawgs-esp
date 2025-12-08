@@ -34,8 +34,8 @@ extern "C" void app_main(void) {
     comms.broadcastMsg("hello world!");
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
 
-    //TcpClient tcpClient("Hugo telefooonnn", "hugowifi12333", "10.161.5.237", 8089);
-    //tcpClient.start();
+    TcpClient* tcpClient = new TcpClient("Hugo telefooonnn", "hugowifi12333", "10.245.112.237", 8089);
+    tcpClient->start();
 
     ESP_LOGI(TAG, "All components started");
 
