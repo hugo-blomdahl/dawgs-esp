@@ -1,13 +1,6 @@
 #include "activityPlanner.hpp"
-#include "energy.hpp"
 
-ActivityPlanner::States state = ActivityPlanner::States::idle;
-Comms* communication;
-Energy* energy;
 
-bool isLeader = false;
-bool isThereALeader = false;
-uint8_t leaderMACaddress;
 bool performingRoute = false; // changes when route is done
 
 // state alarm
@@ -18,13 +11,22 @@ bool isStartUp = true;
 
 // state createAndAssignRoute
 std::list<uint8_t*> routeRequests;
-std::list<ActivityPlanner::message> messages;
+std::list<Message> messages;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
+
 
 ActivityPlanner::ActivityPlanner(Comms* aComms){
     communication = aComms;
+    communication->setMessageList(&messages);
     energy = new Energy();
     energy->begin();
+
+    state = idle;
+    isLeader = false;
+    isThereALeader = false;
+    performingRoute = false;
+    alarmed = false;
+    isStartUp = true;
 }
 void ActivityPlanner::state_machine_(){
     processMsg();
@@ -91,13 +93,23 @@ void ActivityPlanner::sendLog(std::string log){
 
 }
 
-void processMsg(){
+void ActivityPlanner::processMsg(){
+    std::lock_guard<std::mutex> lock(communication->getMutex());
     while(!messages.empty()){
-        ActivityPlanner::message message = messages.front();    // pops the first message from the list
+        
+        Message message = messages.front();    // pops the first message from the list
         std::string messageStr = message.message;               // saves the message data
 
         char delimiter = ';';                                   
-        std::string messageType = messageStr.substr(0,messageType.find(delimiter)); // gets the message type
+        //this is wrong? cant fall find on yourself std::string messageType = messageStr.substr(0,messageType.find(delimiter)); // gets the message type
+        size_t delimiterPos = messageStr.find(delimiter);
+
+        std::string messageType;
+        if(delimiterPos != std::string::npos){
+            messageType = messageStr.substr(0, delimiterPos);
+        } else {
+            messageType = messageStr; //if not found just put whole message
+        }
         if(messageType == "NN"){ // New Node
             
         } else if(messageType == "RC"){ // Route Complete
@@ -117,6 +129,7 @@ void processMsg(){
         } else if(messageType == "NL"){ // New Leader
 
         }
+        std::cout << "Processed message: " << messageStr << std::endl;
         messages.pop_front();           // removes the first message from the list
     }
 }

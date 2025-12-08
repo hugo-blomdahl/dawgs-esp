@@ -1,12 +1,15 @@
 #include "communication.hpp"
-#include <esp_random.h>
 
+Comms* Comms::instance = nullptr;
+std::mutex Comms::listMutex;
 uint8_t Comms::selfAddress[6] = {0};
 const char* Comms::TAG_COMMS = "Comms";
 
 Comms::Comms() {
     // Remove all the WiFi init code - it's now in app_main
     // Just do ESP-NOW specific initialization
+
+    instance = this;
 
     esp_err_t err = esp_now_init();
     if (err != ESP_OK) {
@@ -33,6 +36,10 @@ void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data
     MultiHopPacket* packet = (MultiHopPacket*)data;
     std::string msg(packet->payload, packet->payloadLen);  // Construct from pointer + length
     ESP_LOGI(TAG_COMMS, "Recieved %d bytes: %s", packet->payloadLen, msg.c_str());
+    Message newMessage;
+    memcpy(newMessage.macAddress, packet->srcMAC, 6);
+    newMessage.message = msg;
+    instance->messages->push_back(newMessage);
     //ESP_LOGI(TAG_COMMS, "ATTEMPTING TO READ info: %02X", recv_info->src_addr[0]);
 }
 
@@ -81,4 +88,10 @@ void Comms::broadcastMsg(std::string message){
     sendMsg(broadcastAddress, message);
 }
 
+void Comms::setMessageList(std::list<Message>* messageList){
+    messages = messageList;
+}
 
+std::mutex& Comms::getMutex(){
+    return listMutex;
+}

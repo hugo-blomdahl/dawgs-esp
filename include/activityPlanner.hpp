@@ -6,14 +6,17 @@
 #include <list>
 #include <esp_timer.h>
 #include "communication.hpp"
+#include "energy.hpp"
 
 class ActivityPlanner {
     public: 
 
-    ActivityPlanner(Comms* comms);               //constructor                                       
+    ActivityPlanner(Comms* aComms);               //constructor                                       
     void state_machine_();           //the stace machine  
     void sendLog(std::string log);                                     //function to send logs, is this correct parameter format for strings  
     
+    std::list<Message> messages;
+
     enum States {
         chargeBattery,              //go to charging station and charge
         alarm,                      //the node alarms to a server
@@ -30,14 +33,28 @@ class ActivityPlanner {
         bool isLeader;
     };
 
-    struct message {
-        uint8_t macAddress[6];
-        std::string message;
-    };
-
     private:
 
+    Comms* communication;
+    Energy* energy;
+    bool isLeader;
+    bool isThereALeader;
+    uint8_t leaderMACaddress[6];
+    bool performingRoute; // changes when route is done
+    States state;
+
+    // state alarm
+    bool alarmed;
+
+    // start up / assingNewLeader
+    bool isStartUp;
+
+    // state createAndAssignRoute
+    std::list<uint8_t*> routeRequests;
+    std::vector<nodeFriend> nodeFriends;
+
     void processMsg();
+    //change array to vector. use int?
     void createRoute(std::string* route[]);                                   //function to create route, what kind of return variable?????
     void assignRoute(uint8_t* address, std::string* route[]);      //function to assign route, check how the address works  
 
