@@ -1,4 +1,5 @@
 #include "communication.hpp"
+#include <esp_random.h>
 
 uint8_t Comms::selfAddress[6] = {0};
 const char* Comms::TAG_COMMS = "Comms";
@@ -23,9 +24,18 @@ Comms::Comms() {
     } else {
         ESP_LOGE(TAG_COMMS, "Failed to read self MAC");
     }
+    esp_now_register_recv_cb(Comms::onDataRecv);
 
     ESP_LOGI(TAG_COMMS, "ESP-NOW initialized");
 }
+
+void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len){
+    MultiHopPacket* packet = (MultiHopPacket*)data;
+    std::string msg(packet->payload, packet->payloadLen);  // Construct from pointer + length
+    ESP_LOGI(TAG_COMMS, "Recieved %d bytes: %s", packet->payloadLen, msg.c_str());
+    //ESP_LOGI(TAG_COMMS, "ATTEMPTING TO READ info: %02X", recv_info->src_addr[0]);
+}
+
 
 
 int Comms::sendMsg(uint8_t* address, std::string message){
@@ -48,10 +58,16 @@ int Comms::sendMsg(uint8_t* address, std::string message){
             return ESP_FAIL;
         }
     }
+    MultiHopPacket packet;
+    memcpy(packet.srcMAC, selfAddress, 6);
+    memcpy(packet.dstMAC, address, 6);
+    packet.ttl = 2; //changeme
+    packet.msgID = esp_random();
+    packet.payloadLen = message.length();
+    memcpy(packet.payload, message.c_str(), packet.payloadLen);
 
-    esp_err_t err = esp_now_send(address,
-                                 reinterpret_cast<const uint8_t*>(message.data()),
-                                 message.size());
+
+    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+15);  //15 for packet structure
     if (err != ESP_OK) {
         ESP_LOGE(TAG_COMMS, "esp_now_send failed: %s", esp_err_to_name(err));
         return err;
@@ -65,7 +81,4 @@ void Comms::broadcastMsg(std::string message){
     sendMsg(broadcastAddress, message);
 }
 
-void Comms::initCommunication(){
-
-}
 

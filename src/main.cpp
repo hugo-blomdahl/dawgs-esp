@@ -1,5 +1,6 @@
 #include <iostream>
 #include "communication.hpp"
+#include "activityPlanner.hpp"
 #include "tcpClient.hpp"
 #include "nvs_flash.h"
 #include "esp_log.h"
@@ -30,6 +31,8 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Global WiFi initialized");
 
     Comms comms;
+    comms.broadcastMsg("hello world!");
+    ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
 
     TcpClient* tcpClient = new TcpClient("Hugo telefooonnn", "hugowifi12333", "10.245.112.237", 8089);
     tcpClient->start();
