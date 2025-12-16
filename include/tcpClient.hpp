@@ -11,6 +11,7 @@ public:
     TcpClient(const char* serverIp, int serverPort, EventGroupHandle_t wifiEvents, const int connectedBit);
     ~TcpClient();
     void start();
+    int sendString(const std::string& msg);
 
 private:
     const char* serverIp;

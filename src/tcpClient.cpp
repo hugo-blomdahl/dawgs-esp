@@ -241,3 +241,16 @@ void TcpClient::clientTaskWrapper(void* pvParameters) {
 void TcpClient::start() {
     xTaskCreate(clientTaskWrapper, "tcp_client", 4096, this, 5, &clientTaskHandle);
 }
+
+int TcpClient::sendString(const std::string& msg) {
+    if (sock < 0) {
+        return -1;
+    }
+
+    int err = send(sock, msg.c_str(), msg.length(), 0);
+    if (err < 0) {
+        return -1;
+    }
+
+    return err;
+}
