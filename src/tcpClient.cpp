@@ -12,11 +12,9 @@
 static const char *TAG = "TcpClient";
 static const int RECONNECT_DELAY_MS = 5000;
 
-TcpClient::TcpClient(const char* ssid, const char* password, 
-                     const char* serverIp, int serverPort)
-    : ssid(ssid), password(password), serverIp(serverIp), 
-      serverPort(serverPort), sock(-1), clientTaskHandle(nullptr) {  // Remove netif(nullptr)
-    wifiEventGroup = xEventGroupCreate();
+TcpClient::TcpClient(const char* serverIp, int serverPort, EventGroupHandle_t wifiEvents, const int connectedBit)
+    : serverIp(serverIp), serverPort(serverPort), sock(-1), clientTaskHandle(nullptr), wifiEventGroup(wifiEvents),
+    WIFI_CONNECTED_BIT(connectedBit) {  
 }
 
 
@@ -27,9 +25,6 @@ TcpClient::~TcpClient() {
     }
     if (sock >= 0) {
         close(sock);
-    }
-    if (wifiEventGroup) {
-        vEventGroupDelete(wifiEventGroup);
     }
 }
 
@@ -50,7 +45,7 @@ TcpClient::~TcpClient() {
     }
 }*/
 
-void TcpClient::wifiEventHandler(void* arg, esp_event_base_t event_base,
+/*void TcpClient::wifiEventHandler(void* arg, esp_event_base_t event_base,
                                  int32_t event_id, void* event_data) {
     TcpClient* client = static_cast<TcpClient*>(arg);
 
@@ -70,10 +65,10 @@ void TcpClient::wifiEventHandler(void* arg, esp_event_base_t event_base,
         ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
         xEventGroupSetBits(client->wifiEventGroup, WIFI_GOT_IP_BIT);
     }
-}
+}*/
 
 
-
+/*
 void TcpClient::initWiFi() {
     ESP_LOGI(TAG, "Configuring WiFi STA connection...");
 
@@ -101,7 +96,7 @@ void TcpClient::initWiFi() {
 
     ESP_LOGI(TAG, "WiFi connection initiated");
 }
-
+*/
 
 
 
@@ -130,14 +125,14 @@ int TcpClient::connectToServer() {
     return sock;
 }
 
-void TcpClient::clientTask() {
+/*void TcpClient::clientTask() {
     char rx_buffer[256];
     std::string line_buffer;
 
     while (1) {
         ESP_LOGI(TAG, "Waiting for WiFi and IP...");
         xEventGroupWaitBits(wifiEventGroup, 
-                           WIFI_CONNECTED_BIT | WIFI_GOT_IP_BIT, 
+                           WIFI_CONNECTED_BIT, 
                            false, true, portMAX_DELAY);
 
         ESP_LOGI(TAG, "WiFi ready, connecting to server...");
@@ -197,13 +192,52 @@ void TcpClient::clientTask() {
         vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
     }
 }
+*/
+
+void TcpClient::clientTask() {
+    char rx_buffer[256];
+    
+    while (1) {
+        ESP_LOGI(TAG, "Waiting for WiFi (Shared Event Group)...");
+        
+        // Wait for the MAIN app to tell us WiFi is ready
+        xEventGroupWaitBits(wifiEventGroup, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+
+        ESP_LOGI(TAG, "WiFi is up. Attempting TCP connection to %s...", serverIp);
+
+        if (connectToServer() < 0) {
+            vTaskDelay(pdMS_TO_TICKS(RECONNECT_DELAY_MS));
+            continue;
+        }
+
+        // --- Send Handshake (MAC) ---
+        uint8_t mac[6];
+        esp_wifi_get_mac(WIFI_IF_STA, mac); // This is safe to call from multiple threads
+        char macStr[30];
+        snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X\n",
+                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        send(sock, macStr, strlen(macStr), 0);
+
+        // --- Receive Loop ---
+        while (1) {
+            int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+            if (len <= 0) {
+                ESP_LOGE(TAG, "Connection closed or error");
+                break;
+            }
+            rx_buffer[len] = 0; // Null terminate
+            ESP_LOGI(TAG, "Received from %s: %s", serverIp, rx_buffer);
+        }
+
+        if (sock >= 0) { close(sock); sock = -1; }
+        vTaskDelay(pdMS_TO_TICKS(RECONNECT_DELAY_MS));
+    }
+}
 
 void TcpClient::clientTaskWrapper(void* pvParameters) {
-    TcpClient* client = static_cast<TcpClient*>(pvParameters);
-    client->clientTask();
+    static_cast<TcpClient*>(pvParameters)->clientTask();
 }
 
 void TcpClient::start() {
-    initWiFi();
     xTaskCreate(clientTaskWrapper, "tcp_client", 4096, this, 5, &clientTaskHandle);
 }
