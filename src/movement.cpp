@@ -23,14 +23,7 @@ void Movement::setSpeed(int speedInPercent){
     
     motorSpeed = speedInPercent;
 
-    // Beräkna linjär hastighet baserat på rpm och hjul
-    float linearSpeed = (motorSpeed / 100.0f) * MAX_SPEED; // m/s
-
-    // Hur långt hjulen rör sig under detta steg
-    float distanceTraveled = linearSpeed * SIM_STEP; // meter per uppdatering
-
-    std::cout << "Moving forward: " << distanceTraveled << " m (speed " 
-              << motorSpeed << "%)" << std::endl;
+    std::cout << "(Set speed " << motorSpeed << "%)" << std::endl;
     /*if (tcpClient) {
     tcpClient->sendString("speed:" + std::to_string(motorSpeed) + "\n");
     }//*/
@@ -62,10 +55,9 @@ void Movement::rotate(float wheelRotationInDegree){
     //teoretisk bågsträcka (s = L * theta)
     float Rad = angle * M_PI / 180.0f;
     float s = WHEEL_BASE * Rad; //pivot turn med ett hjul stilla
-    float wheelRevs = s / WHEEL_CIRC;
+    float wheelRevs = s / WHEEL_CIRC; //varv per sekund
 
-    std::cout << "Rotating: " << angle 
-              << " deg, wheelRevs=" << wheelRevs << std::endl;
+    std::cout << "Rotating: " << angle << " deg, wheelRevs = " << wheelRevs << std::endl;
 
     std::cout << "Angle: " << angle << std::endl;
     /*if (tcpClient) {
@@ -82,13 +74,12 @@ void Movement::moveForward(){
         //RW_A 1
         //RW_B 0
         //beräkna linjär hastighet beroende på motorSpeed
-        float v = (motorSpeed / 100.0f) * MAX_SPEED; //m/s
-        float distance = v * SIM_STEP; //meter per uppdatering
+        float linearSpeed = (motorSpeed / 100.0f) * MAX_SPEED;
+        float distanceTraveled = linearSpeed * SIM_STEP; // meter per uppdatering
 
-        std::cout << "Move forward: " << distance 
-                  << " m (speed " << motorSpeed << "%)" << std::endl;
+        std::cout << "Move forward: " << distanceTraveled << " m (speed " << motorSpeed << "%)" << std::endl;
 
-        std::cout << "Forward: " << motorSpeed << std::endl;
+        std::cout << "Forward: " << motorSpeed << "%"<< std::endl;
         /*if (tcpClient) {
             tcpClient->sendString("forward\n");
         }//*/
@@ -107,13 +98,12 @@ void Movement::moveBackward(){
         //RW_A 0
         //RW_B 1
         //samma beräkning, men negativt för bakåt
-        float v = (motorSpeed / 100.0f) * MAX_SPEED; //m/s
-        float distance = -v * SIM_STEP; //meter per uppdatering
+        float linearSpeed = (motorSpeed / 100.0f) * MAX_SPEED; //m/s
+        float distanceTraveled = -linearSpeed * SIM_STEP; // meter per uppdatering
 
-        std::cout << "Move backward: " << distance 
-                  << " m (speed " << motorSpeed << "%)" << std::endl;
+        std::cout << "Move backward: " << distanceTraveled << " m (speed " << motorSpeed << "%)" << std::endl;
 
-        std::cout << "Backward: " << motorSpeed << std::endl;
+        std::cout << "Backward: " << motorSpeed << "%"<< std::endl;
         /*if (tcpClient) {
             tcpClient->sendString("backward\n");
         }//*/
