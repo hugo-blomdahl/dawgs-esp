@@ -8,6 +8,8 @@
 #include "esp_netif.h"
 
 static const char *TAG = "MAIN";
+static const char *wifi_ssid = "test";
+static const char *wifi_password = "test2";
 
 EventGroupHandle_t wifi_event_group;
 const int WIFI_CONNECTED_BIT = BIT0;
@@ -26,7 +28,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     }
 }
 
-extern "C" void app_main(void) {
+void initWifi(){
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -54,8 +56,8 @@ extern "C" void app_main(void) {
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 
     wifi_config_t wifi_config = {};
-    strncpy((char*)wifi_config.sta.ssid, "Hugo telefooonnn", sizeof(wifi_config.sta.ssid) - 1);
-    strncpy((char*)wifi_config.sta.password, "hugowifi12333", sizeof(wifi_config.sta.password) - 1);
+    strncpy((char*)wifi_config.sta.ssid, wifi_ssid, sizeof(wifi_config.sta.ssid) - 1);
+    strncpy((char*)wifi_config.sta.password, wifi_password, sizeof(wifi_config.sta.password) - 1);
     wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;    
 
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
@@ -64,6 +66,10 @@ extern "C" void app_main(void) {
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "Global WiFi initialized");
+}
+
+extern "C" void app_main(void) {
+    initWifi(); //must be done early!!
 
     Comms comms;
     comms.broadcastMsg("hello world!");
