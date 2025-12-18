@@ -1,8 +1,17 @@
 #pragma once
 #include <string>
 #include "esp_log.h"
+#include <vector>
 
-class Navigation{
+
+struct SimpleNode {
+    float x;
+    float y;
+    std::string qrId;
+};
+
+
+class Navigation {
 
     private:
 
@@ -16,25 +25,27 @@ class Navigation{
         float coordinates[2];
         float headingRad;
         
+    
+        std::vector<SimpleNode> mapNodes;
         
-        void calibrateFromQR(const char* qrId);
+    
+        std::string lastId; 
+
+        void updateRouteProgress(const std::string& qrId);
         
-
-        // kanske ha en getConfidenceValue(); // updateConfidence ??
-
-        // void setRout()
         
-
-
-
+        
 
     public:
-    Navigation();
-    void calibrateFromQR(const std::string& qrId); 
-    float getHeadingDeg() const;  // för logg/UI
-    void getCoordinates(float coords[2]) const;
-    void updateRoute(const std::string route[], int length);
+        Navigation();
 
+        bool loadEmbeddedMap();
+        
+        bool loadMapFromJson(const std::string& jsonString);
 
-
+        void calibrateFromQR(int qrIndex); 
+        
+        float getHeadingDeg() const;  
+        void getCoordinates(float coords[2]) const;
+        void updateRoute(const std::string route[], int length);
 };

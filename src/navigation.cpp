@@ -1,9 +1,10 @@
-#include "navigation.h"
-#include <string.h>
-#include <cmath>
-#include <iostream>
+#include "navigation.h" 
+#include <cmath>  
+#include "cJSON.h" 
+#include "esp_log.h"
+#include "map_json.h"
 
-const char* Navigation::TAG_NAVI = "Navi";
+const char* TAG_NAVI = "Navi";
 
 Navigation::Navigation()
 : routeLength(0),
@@ -19,98 +20,114 @@ Navigation::Navigation()
 
 }
 
-/*FÖRSLAG JSON Derulo:
+bool Navigation::loadEmbeddedMap() {
+    if (map_json_len == 0) {
+        ESP_LOGE(TAG_NAVI, "Embedded map är tom!");
+        return false;
+    }
 
-#include <stdio.h>
-#include "cJSON.h"      // Inkludera biblioteket
-#include "esp_log.h"
+    // Skapa modifierbar buffer och null-terminera (cJSON kräver C-sträng)
+    std::vector<char> buf;
+    buf.reserve(map_json_len + 1);
+    buf.insert(buf.end(), map_json, map_json + map_json_len);
+    buf.push_back('\0');
 
-static const char *TAG = "JSON_EXAMPLE";
+    return loadMapFromJson(std::string(buf.data()));
+}
 
-void app_main(void)
-{
-    // 1. Din JSON-data (t.ex. från MQTT eller HTTP)
-    const char *json_string = "{\"sensor\":\"temp\", \"värde\": 24.5}";
 
-    // 2. Parsa strängen till ett cJSON-objekt (Struct)
-    cJSON *root = cJSON_Parse(json_string);
-    
-    // Alltid bra att kolla så det inte blev fel (t.ex. trasig JSON)
+bool Navigation::loadMapFromJson(const std::string& jsonString) { 
+    mapNodes.clear();
+
+    cJSON *root = cJSON_Parse(jsonString.c_str());
     if (root == NULL) {
-        ESP_LOGE(TAG, "Kunde inte parsa JSON");
+        ESP_LOGE(TAG_NAVI, "Kunde inte parsa JSON-kartdata.");
+        return false;
+    }
+    
+    cJSON *nodes_array = cJSON_GetObjectItemCaseSensitive(root, "nodes");
+    if (!cJSON_IsArray(nodes_array)) {
+        ESP_LOGE(TAG_NAVI, "JSON saknar 'nodes' array.");
+        cJSON_Delete(root);
+        return false;
+    }
+
+    int nodeCount = cJSON_GetArraySize(nodes_array);
+    
+    for (int i = 0; i < nodeCount; i++) {
+        cJSON *node_obj = cJSON_GetArrayItem(nodes_array, i);
+        if (node_obj) {
+            SimpleNode node;
+            
+            // Läs koordinater
+            cJSON *x = cJSON_GetObjectItemCaseSensitive(node_obj, "x");
+            cJSON *y = cJSON_GetObjectItemCaseSensitive(node_obj, "y");
+            
+            // Läs QRID
+            cJSON *qr_item = cJSON_GetObjectItemCaseSensitive(node_obj, "qrId"); 
+
+            bool validCoords = cJSON_IsNumber(x) && cJSON_IsNumber(y);
+            bool validQR = cJSON_IsString(qr_item) && (qr_item->valuestring != nullptr);
+
+            if (validCoords) {
+                node.x = (float)x->valuedouble;
+                node.y = (float)y->valuedouble;
+            } else {
+                ESP_LOGW(TAG_NAVI, "Nod %d saknar giltiga koordinater, ignoreras.", i);
+                continue;
+            }
+
+            if (validQR) {
+                node.qrId = qr_item->valuestring; // lagrar QR-ID som string
+            } else {
+                node.qrId = ""; // tom string om QR saknas
+            }
+
+            mapNodes.push_back(node);
+        }
+    }
+
+    cJSON_Delete(root);
+    ESP_LOGI(TAG_NAVI, "Karta laddad och parsas. %zu noder lagrade i minnet.", mapNodes.size());
+    return true;
+}
+
+
+void Navigation::calibrateFromQR(int qrIndex){ 
+    if (qrIndex < 0 || qrIndex >= mapNodes.size()) {
+        ESP_LOGE(TAG_NAVI, "Ogiltigt QR index %d. Utanför kartans område.", qrIndex);
+        return;
+    }
+    
+    const SimpleNode& targetNode = mapNodes[qrIndex];
+    
+ 
+    coordinates[0] = targetNode.x;
+    coordinates[1] = targetNode.y;
+    ESP_LOGI(TAG_NAVI, "Calibration COMPLETE. Index %d -> (%.2f, %.2f)", 
+             qrIndex, coordinates[0], coordinates[1]);
+
+    std::string qrIdStr = targetNode.qrId; 
+
+    // Om samma QR läses igen, gör inget
+    if (qrIdStr.empty() || qrIdStr == lastId) {
         return;
     }
 
-    // 3. Hämta ut specifika fält
-    cJSON *sensor = cJSON_GetObjectItem(root, "sensor");
-    cJSON *value  = cJSON_GetObjectItem(root, "värde");
+    updateRouteProgress(qrIdStr);
 
-    // 4. Läs och använd värdena
-    // cJSON_GetStringValue är säkert, returnerar strängen eller NULL
-    if (cJSON_IsString(sensor)) {
-        ESP_LOGI(TAG, "Sensortyp: %s", cJSON_GetStringValue(sensor));
-    }
-
-    if (cJSON_IsNumber(value)) {
-        // valuedouble används för float/double, valueint för heltal
-        ESP_LOGI(TAG, "Temperatur: %.2f", value->valuedouble);
-    }
-
-    // 5. VIKTIGT: Städa upp minnet!
-    // I C måste du manuellt frigöra minnet som cJSON allokerade.
-    // Glömmer du detta får du minnesläckor (memory leaks).
-    cJSON_Delete(root); 
+    lastId = qrIdStr;
 }
-// Antag att 'root' är hela ditt parsade JSON-objekt
-cJSON *noder_lista = cJSON_GetObjectItem(root, "noder");
 
-// Kontrollera att det faktiskt är en array
-if (cJSON_IsArray(noder_lista)) {
-    
-    // Hämta element på index 1 (vilket är den andra noden, "vardagsrum")
-    cJSON *vald_nod = cJSON_GetArrayItem(noder_lista, 1);
 
-    if (vald_nod != NULL) {
-        cJSON *plats = cJSON_GetObjectItem(vald_nod, "plats");
-        ESP_LOGI("JSON", "Vald plats: %s", plats->valuestring);
+void Navigation::updateRouteProgress(const std::string& qrId) {
+    if (currentTargetIndex < routeLength && qrId == routeIDs[currentTargetIndex]) {
+        currentTargetIndex++;
+        ESP_LOGI(TAG_NAVI, "Route progress: Target found. Moving to next index %d.", currentTargetIndex);
     }
 }
 
 
-*/
-
-
-void Navigation::calibrateFromQR(const std::string& qrId){ //strukturera om så att korrigering sker även om oväntat QR avläses
-    //this is happening in task. be careful!!!!
-    if (qrId.empty()) return;
-
-    ESP_LOGI(TAG_NAVI, "Read qr code: %s", qrId.c_str());
-
-    if (qrId == lastId){
-        //korrigera?
-
-
-        return;
-    }
-    
-    if (qrId == routeIDs[currentTargetIndex]) {
-
-       
-        currentTargetIndex++; //rätt QR-kod hittad, vidare till nästa
-
-        // TODO: Själva korrigeringen
-        //coordinates[0] = map.nodeId.x~isch
-        //coordinates[1] = map.nodeId.y~isch
-
-        //logga till server vilket rum? logga massa
-        //rapportera om konstverk hittades??
-    } else {
-        // oväntat QR avläst, kanske loggas? 
-        ESP_LOGI(TAG_NAVI, "Unknown qr code!");
-
-    } 
-
-}
 
 void Navigation::getCoordinates(float coords[2]) const{
         coords[0] = coordinates[0];
@@ -134,5 +151,3 @@ void Navigation::updateRoute(const std::string route[], int length) {
         routeLength++;
     }
 }
-
-
