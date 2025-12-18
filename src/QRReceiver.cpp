@@ -11,6 +11,7 @@
 #define UART_RX_PIN     5
 #define UART_RX_BUF_SZ  1024
 #define READ_CHUNK_SZ   256
+static const char *TAG_QR_RECEIVER = "QR_RECV";
 
 static void uart_reader_task(void* arg) {
     Navigation* navigation = static_cast<Navigation*>(arg);
