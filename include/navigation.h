@@ -18,7 +18,6 @@ class Navigation {
         static const int MAX_ROUTE_LEN = 16;      // max antal stopp i en rutt
         int  routeLength;      
         int  currentTargetIndex;
-        static const char* TAG_NAVI;
 
         std::string routeIDs[MAX_ROUTE_LEN];
         float coordinates[2];

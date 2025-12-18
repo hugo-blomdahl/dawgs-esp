@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "map_json.h"
 
-const char* Navigation::TAG_NAVI = "Navi";
+const char* TAG_NAVI = "Navi";
 
 Navigation::Navigation()
 : routeLength(0),
