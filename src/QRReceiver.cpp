@@ -6,12 +6,11 @@
 #include "driver/uart.h"
 #include "esp_log.h"
 
-#define UART_RX_PORT UART_NUM_1
-#define UART_RX_BAUD 115200
-#define UART_RX_PIN 16
-#define UART_RX_BUF_SZ 1024
-#define READ_CHUNK_SZ 256
-
+#define UART_RX_PORT    UART_NUM_1
+#define UART_RX_BAUD    115200
+#define UART_RX_PIN     5
+#define UART_RX_BUF_SZ  1024
+#define READ_CHUNK_SZ   256
 static const char *TAG_QR_RECEIVER = "QR_RECV";
 
 static void uart_reader_task(void* arg) {

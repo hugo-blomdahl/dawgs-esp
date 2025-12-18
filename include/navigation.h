@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "esp_log.h"
 #include <vector>
 
 
@@ -15,8 +16,8 @@ class Navigation {
     private:
 
         static const int MAX_ROUTE_LEN = 16;      // max antal stopp i en rutt
-        int  routeLength;       
-        int  currentTargetIndex;   
+        int  routeLength;      
+        int  currentTargetIndex;
 
         std::string routeIDs[MAX_ROUTE_LEN];
         float coordinates[2];
