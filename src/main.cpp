@@ -1,3 +1,7 @@
+#include "navigation.h"
+#include "QRReceiver.h"
+#include "freertos/FreeRTOS.h" // Needed for vTaskDelay
+#include "freertos/task.h"     // Needed for vTaskDelay
 #include <iostream>
 #include "communication.hpp"
 #include "activityPlanner.hpp"
@@ -74,12 +78,15 @@ extern "C" void app_main(void) {
     Comms comms;
     comms.broadcastMsg("hello world!");
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
+    Navigation navigation;
+    startUARTReader(&navigation);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
     TcpClient* loggClient = new TcpClient("10.106.78.80", 8084, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
+    
 
     ESP_LOGI(TAG, "All components started");
 
