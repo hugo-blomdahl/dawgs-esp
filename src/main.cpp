@@ -89,8 +89,8 @@ extern "C" void app_main(void) {
     visualClient->start();
 
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms, loggClient, visualClient);
-    //activityPlanner->sendLog("test");       //send to logg
-    //activityPlanner->sendVisual("test");    //send to visual
+    //activityPlanner->sendLog("test\n");       //send to logg
+    //activityPlanner->sendVisual("test\n");    //send to visual
     
 
     ESP_LOGI(TAG, "All components started");
