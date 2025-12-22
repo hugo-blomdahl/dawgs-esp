@@ -86,7 +86,7 @@ extern "C" void app_main(void) {
     TcpClient* visualClient = new TcpClient("10.106.78.80", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
-    visualClient->~TcpClient();
+    visualClient->start();
 
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms, loggClient, visualClient);
     
