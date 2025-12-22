@@ -7,14 +7,16 @@
 #include <esp_timer.h>
 #include "communication.hpp"
 #include "energy.hpp"
+#include "tcpClient.hpp"
 
 class ActivityPlanner {
     public: 
 
-    ActivityPlanner(Comms* aComms);               //constructor                                       
+    ActivityPlanner(Comms* aComms, TcpClient* aLoggClient, TcpClient* aVisualClient);               //constructor                                       
     void state_machine_();           //the stace machine  
     void sendLog(std::string log);                                     //function to send logs, is this correct parameter format for strings  
-    
+    void sendVisual(std::string log);
+
     std::list<Message> messages;
 
     enum States {
@@ -34,6 +36,10 @@ class ActivityPlanner {
     };
 
     private:
+
+    TcpClient* visualClient;
+    TcpClient* loggClient;
+
 
     Comms* communication;
     Energy* energy;

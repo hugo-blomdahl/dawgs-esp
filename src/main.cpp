@@ -77,15 +77,20 @@ extern "C" void app_main(void) {
 
     Comms comms;
     comms.broadcastMsg("hello world!");
-    ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
     Navigation navigation;
     startUARTReader(&navigation);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
     TcpClient* loggClient = new TcpClient("10.106.78.80", 8084, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* visualClient = new TcpClient("10.106.78.80", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
+    visualClient->start();
+
+    ActivityPlanner* activityPlanner = new ActivityPlanner(&comms, loggClient, visualClient);
+    //activityPlanner->sendLog("test\n");       //send to logg
+    //activityPlanner->sendVisual("test\n");    //send to visual
     
 
     ESP_LOGI(TAG, "All components started");

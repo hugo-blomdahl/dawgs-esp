@@ -15,7 +15,9 @@ std::list<Message> messages;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
 
 
-ActivityPlanner::ActivityPlanner(Comms* aComms){
+ActivityPlanner::ActivityPlanner(Comms* aComms, TcpClient* aLoggClient, TcpClient* aVisualClient){
+    loggClient = aLoggClient;
+    visualClient = aVisualClient;
     communication = aComms;
     communication->setMessageList(&messages);
     energy = new Energy();
@@ -90,8 +92,13 @@ void ActivityPlanner::assignRoute(uint8_t* address, std::string* route[]){
 }
 
 void ActivityPlanner::sendLog(std::string log){
-
+    loggClient->sendString(log);
 }
+
+void ActivityPlanner::sendVisual(std::string log){
+    visualClient->sendString(log);
+}
+
 
 void ActivityPlanner::processMsg(){
     std::lock_guard<std::mutex> lock(communication->getMutex());
