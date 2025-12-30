@@ -79,7 +79,8 @@ extern "C" void app_main(void) {
     comms.broadcastMsg("hello world!");
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
     Navigation navigation;
-    startUARTReader(&navigation);
+    TcpClient qrTcp("192.168.0.1", 4565, wifi_event_group, WIFI_CONNECTED_BIT);
+    startUARTReader(&navigation, &qrTcp);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);

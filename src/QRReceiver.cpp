@@ -1,4 +1,5 @@
 #include "navigation.h"
+#include "tcpClient.hpp"
 #include <string>
 #include <charconv>
 #include "freertos/FreeRTOS.h"
@@ -13,8 +14,16 @@
 #define READ_CHUNK_SZ   256
 static const char *TAG_QR_RECEIVER = "QR_RECV";
 
+struct TaskParams {
+    Navigation* navigation;
+    TcpClient* tcpClient; // The new object you need
+};
+
 static void uart_reader_task(void* arg) {
-    Navigation* navigation = static_cast<Navigation*>(arg);
+    TaskParams* params = static_cast<TaskParams*>(arg);
+    Navigation* navigation = params->navigation;
+    TcpClient* tcpClient = params->tcpClient;
+    delete params;
     uint8_t* buf = (uint8_t*) malloc(READ_CHUNK_SZ);
     if (!buf) { 
         ESP_LOGE(TAG_QR_RECEIVER, "Kunde inte allokera buffert.");
@@ -55,7 +64,7 @@ static void uart_reader_task(void* arg) {
     vTaskDelete(NULL);
 }
 
-void startUARTReader(Navigation* navigation) {
+void startUARTReader(Navigation* navigation, TcpClient* tcpClient) {
     uart_config_t uart_cfg = {};
     uart_cfg.baud_rate = UART_RX_BAUD;
     uart_cfg.data_bits = UART_DATA_8_BITS;
@@ -66,5 +75,11 @@ void startUARTReader(Navigation* navigation) {
     uart_param_config(UART_RX_PORT, &uart_cfg);
     uart_set_pin(UART_RX_PORT, UART_PIN_NO_CHANGE, UART_RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE); 
 
-    xTaskCreate(uart_reader_task, "uart_reader", 4096, navigation, 5, NULL);
+    TaskParams* params = new TaskParams;
+
+    // 2. Assign your objects
+    params->navigation = navigation;
+    params->tcpClient = tcpClient;
+
+    xTaskCreate(uart_reader_task, "uart_reader", 4096, params, 5, NULL);
 }
