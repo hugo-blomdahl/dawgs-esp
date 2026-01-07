@@ -1,19 +1,22 @@
+#include <iostream>
+#include "testClient.hpp"
+#include "tcpClient.hpp"
 #include "navigation.h"
 #include "QRReceiver.h"
+
 #include "freertos/FreeRTOS.h" // Needed for vTaskDelay
 #include "freertos/task.h"     // Needed for vTaskDelay
-#include <iostream>
+
 #include "communication.hpp"
 #include "activityPlanner.hpp"
-#include "tcpClient.hpp"
 #include "nvs_flash.h"
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
 
 static const char *TAG = "MAIN";
-static const char *wifi_ssid = "test";
-static const char *wifi_password = "test2";
+static const char *wifi_ssid = "Hugo telefooonnn";
+static const char *wifi_password = "hugowifi12333";
 
 EventGroupHandle_t wifi_event_group;
 const int WIFI_CONNECTED_BIT = BIT0;
@@ -79,14 +82,16 @@ extern "C" void app_main(void) {
     comms.broadcastMsg("hello world!");
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms);
     Navigation navigation;
+    navigation.loadEmbeddedMap();
+
     TcpClient qrTcp("192.168.0.1", 4565, wifi_event_group, WIFI_CONNECTED_BIT);
     startUARTReader(&navigation, &qrTcp);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
-    TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
-    TcpClient* loggClient = new TcpClient("10.106.78.80", 8084, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* testClient = new TestClient("10.150.241.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT, &navigation);
+    //TcpClient* loggClient = new TcpClient("10.106.78.80", 8084, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
-    loggClient->start();
+    //loggClient->start();
     
 
     ESP_LOGI(TAG, "All components started");

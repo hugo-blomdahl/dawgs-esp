@@ -9,10 +9,12 @@
 class TcpClient {
 public:
     TcpClient(const char* serverIp, int serverPort, EventGroupHandle_t wifiEvents, const int connectedBit);
-    ~TcpClient();
+    //virtual krävs för inheritance
+    virtual ~TcpClient(); 
     void start();
     int sendString(const std::string& msg);
-
+protected:
+    virtual void handleMessage(const char* data, int len);
 private:
     const char* serverIp;
     int serverPort;
