@@ -12,8 +12,8 @@
 #include "esp_netif.h"
 
 static const char *TAG = "MAIN";
-static const char *wifi_ssid = "test";
-static const char *wifi_password = "test2";
+static const char *wifi_ssid = "Lill-klumpen";
+static const char *wifi_password = "jeffjeff123";
 
 EventGroupHandle_t wifi_event_group;
 const int WIFI_CONNECTED_BIT = BIT0;
@@ -78,12 +78,13 @@ extern "C" void app_main(void) {
     Comms comms;
     comms.broadcastMsg("hello world!");
     Navigation navigation;
+    navigation.loadEmbeddedMap();
     startUARTReader(&navigation);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
-    TcpClient* loggClient = new TcpClient("10.106.78.80", 8084, wifi_event_group, WIFI_CONNECTED_BIT);
-    TcpClient* visualClient = new TcpClient("10.106.78.80", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* loggClient = new TcpClient("10.237.14.86", 1234, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* visualClient = new TcpClient("10.106.78.81", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
     visualClient->start();
@@ -98,5 +99,7 @@ extern "C" void app_main(void) {
     while(true) {
         activityPlanner->state_machine_();
         vTaskDelay(pdMS_TO_TICKS(1000));
+            activityPlanner->sendLog("test\n");       //send to logg
+
     }
 }
