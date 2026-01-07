@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <cmath>
 #include <esp_timer.h>
 #include "communication.hpp"
 #include "energy.hpp"
@@ -31,6 +32,7 @@ class ActivityPlanner {
         uint8_t macAddress[6]; 
         float percentage; 
         bool isLeader;
+        bool accept;
     };
 
     private:
@@ -39,7 +41,9 @@ class ActivityPlanner {
     Energy* energy;
     bool isLeader;
     bool isThereALeader;
+    bool broadcastedMAC;
     uint8_t leaderMACaddress[6];
+    uint8_t macAddress[6];
     bool performingRoute; // changes when route is done
     States state;
 
@@ -48,6 +52,8 @@ class ActivityPlanner {
 
     // start up / assingNewLeader
     bool isStartUp;
+    long timeSinceStartUp = 0;
+    long timeAtStartUp = 0;
 
     // state createAndAssignRoute
     std::list<uint8_t*> routeRequests;
