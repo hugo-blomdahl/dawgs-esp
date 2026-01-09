@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <cmath>
 #include <esp_timer.h>
 #include "communication.hpp"
 #include "energy.hpp"
@@ -33,6 +34,7 @@ class ActivityPlanner {
         uint8_t macAddress[6]; 
         float percentage; 
         bool isLeader;
+        bool accept;
     };
 
     private:
@@ -45,6 +47,7 @@ class ActivityPlanner {
     Energy* energy;
     bool isLeader;
     bool isThereALeader;
+    bool broadcastedMAC;
     uint8_t leaderMACaddress[6];
     bool performingRoute; // changes when route is done
     States state;
@@ -54,6 +57,8 @@ class ActivityPlanner {
 
     // start up / assingNewLeader
     bool isStartUp;
+    long timeSinceStartUp = 0;
+    long timeAtStartUp = 0;
 
     // state createAndAssignRoute
     std::list<uint8_t*> routeRequests;
@@ -61,9 +66,8 @@ class ActivityPlanner {
 
     void processMsg();
     //change array to vector. use int?
-    void createRoute(std::string* route[]);                                   //function to create route, what kind of return variable?????
+    void createRoute(std::string* route[]);                        //function to create route, what kind of return variable?????
     void assignRoute(uint8_t* address, std::string* route[]);      //function to assign route, check how the address works  
-
 };
 
 #endif

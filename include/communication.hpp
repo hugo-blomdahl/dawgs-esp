@@ -11,6 +11,7 @@
 #include <esp_random.h>
 #include <list>
 #include <mutex>
+#include <string.h>
 
 struct Message {
         uint8_t macAddress[6];
@@ -21,7 +22,6 @@ struct Message {
 class Comms {
     private:
         static Comms* instance;
-        static uint8_t selfAddress[6];
         static const char* TAG_COMMS;
         static void onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len);
         std::list<Message>* messages = nullptr;
@@ -31,6 +31,7 @@ class Comms {
 
     public:
         Comms();
+        static uint8_t selfAddress[6];
         struct MultiHopPacket {
             uint8_t srcMAC[6];      // Original sender (6 bytes)
             uint8_t dstMAC[6];      // Final destination (6 bytes)
