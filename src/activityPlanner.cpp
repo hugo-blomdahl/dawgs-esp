@@ -1,19 +1,11 @@
 #include "activityPlanner.hpp"
 
 
-bool performingRoute = false; // changes when route is done
-
-// state alarm
-bool alarmed = false;
-
-// start up / assingNewLeader
-bool isStartUp = true;
 
 // state createAndAssignRoute
 std::list<uint8_t*> routeRequests;
 std::list<Message> messages;
 std::vector<ActivityPlanner::nodeFriend> nodeFriends;
-
 
 ActivityPlanner::ActivityPlanner(Comms* aComms, TcpClient* aLoggClient, TcpClient* aVisualClient){
     loggClient = aLoggClient;
@@ -24,17 +16,27 @@ ActivityPlanner::ActivityPlanner(Comms* aComms, TcpClient* aLoggClient, TcpClien
     energy->begin();
 
     state = idle;
-    isLeader = false;
-    isThereALeader = false;
+    
     performingRoute = false;
     alarmed = false;
+
     isStartUp = true;
+    broadcastedMAC = false;
+
+    isLeader = false;
+    isThereALeader = false;
+    proposeToBeLeader = false;
+    propose = true;
+
+    timeAtStartUp = esp_timer_get_time();
 }
 void ActivityPlanner::state_machine_(){
     processMsg();
-    if(isStartUp) timeSinceStartUp = esp_timer_get_time() - timeAtStartUp;
-    if(isLeader) printf("isLeader");
-    
+    timeSinceStartUp = esp_timer_get_time() - timeAtStartUp;
+    //if(isLeader) std::cout << "isLeader: " << std::endl;
+
+    std::cout << "size: " << nodeFriends.size() << ", isStartUp: " << isStartUp << ", broadcastedMAC: " << broadcastedMAC <<std::endl;
+
     //update data
     
     // ToDo: check detection
@@ -48,66 +50,77 @@ void ActivityPlanner::state_machine_(){
     else if(performingRoute) state = performRoute;
     else state = idle;
 
+
     switch (state){
-        case chargeBattery: //go to charging station and charge
+        case chargeBattery: // 0, go to charging station and charge
             // ToDo
             // find charging station point, travel there and charge
             
             break;
-        case alarm: //the node alarms to a server
+        case alarm: // 1, the node alarms to a server
             // ToDo
             // send to server and broadcast
 
             break;
-        case assignNewLeader:   //LastResortCom, when new leader needs to be assigned 
+        case assignNewLeader:   // 2, LastResortCom, when new leader needs to be assigned 
              // ToDo
             // if start up: find the mac address with lowest value and set leader
             // else: broadcast battery level to all other nodes: check battery level, if same with 2 or more check again with MAC-address
-            if(isStartUp && timeSinceStartUp > 10*1000){
-                bool proposeToBeLeader = false;
-                printf("isStartUp && timeSinceStartUp > 10*1000");
-
-                //kolla igenom
+            if(isStartUp && !broadcastedMAC && timeSinceStartUp >= 5*1000*1000){
+                communication->broadcastMsg("NN");
+                broadcastedMAC = true;
+            }if(isStartUp && broadcastedMAC && propose && timeSinceStartUp >= 15*1000*1000){
+                propose = false;
                 for(int i = 0; i < 6; i++){
                     for(auto node : nodeFriends){
                         if(communication->selfAddress[i] < node.macAddress[i]) {
-                            proposeToBeLeader = true;
+                            propose = true;
                         }
                         else {
-                            proposeToBeLeader = false;
+                            propose = false;
                         }
+                        if(!propose) break;
                     }
-                    if(proposeToBeLeader) {
+                    if(propose) {
                         communication->broadcastMsg("PL");
-                        isStartUp = false;
-                        printf("proposed");
+                        proposeToBeLeader = true;
+                        break;
+                    } else {
                         break;
                     }
                 }
-                printf("didn't propose");
-                
-            } else if(isStartUp && !broadcastedMAC){
-                std::string message = "";
-                if(isLeader) std::string message = "NN;true";
-                else std::string message = "NN;false";
-                communication->broadcastMsg(message);
-                broadcastedMAC = true;
-            } 
+                propose = false;
+            }if(isStartUp && broadcastedMAC && proposeToBeLeader && timeSinceStartUp > 25*1000*1000 ){
+                bool breakOut = false;
+                for(auto node : nodeFriends){
+                    if(!node.accept){
+                        breakOut = true;
+                        break;
+                    }
+                }
+                if(!breakOut) {
+                    isLeader = true;
+                    proposeToBeLeader = false;
+                    isStartUp = false;
+                    communication->broadcastMsg("CL");
+                }
+            }
+
             break;
-        case createAndAssignRoute: { //the node is leader which creates and assignsroutes
+        case createAndAssignRoute: { // 3, the node is leader which creates and assignsroutes
             // ToDo
 
             } break;
-        case routeComplete: {//the node is finished with a route and requests a new route
+        case routeComplete: {// 4, the node is finished with a route and requests a new route
             // ToDo
             
             } break;
-        case performRoute:  //the node follows a route and performs its routine tasks
+        case performRoute:  // 5, the node follows a route and performs its routine tasks
             // ToDo
             // kolla med alva
 
             break;
-        case idle:  //either idle or is somehow broken or is lost
+        case idle:  //6, either idle or is somehow broken or is lost
 
             break;
     }
@@ -132,11 +145,14 @@ void ActivityPlanner::sendVisual(std::string log){
 
 
 void ActivityPlanner::processMsg(){
-    std::lock_guard<std::mutex> lock(communication->getMutex());
+    //std::lock_guard<std::mutex> lock(communication->getMutex());
     while(!messages.empty()){
         
         Message message = messages.front();    // pops the first message from the list
+        messages.pop_front();           // removes the first message from the list
         std::string messageStr = message.message;               // saves the message data
+
+        std::cout << "Processed message: " << messageStr << std::endl;
 
         char delimiter = ';';                                   
         //this is wrong? cant fall find on yourself std::string messageType = messageStr.substr(0,messageType.find(delimiter)); // gets the message type
@@ -153,38 +169,42 @@ void ActivityPlanner::processMsg(){
             // NN;isLeader
             bool breakOut = false;
             for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
-                    breakOut = true;
-                    break;
-                }
+                if(node.macAddress == message.macAddress) breakOut = true;
+                if(breakOut) break;
             }
             if(breakOut) break;
 
             ActivityPlanner::nodeFriend tempNode = ActivityPlanner::nodeFriend();
             memcpy(tempNode.macAddress, message.macAddress, 6);
-            if(messageStr.substr(1,delimiterPos) == "false") tempNode.isLeader = false;
-            else if (messageStr.substr(1,delimiterPos) == "true") tempNode.isLeader = true;
+            tempNode.isLeader = false;
 
             nodeFriends.push_back(tempNode);
             if(isLeader) communication->sendMsg(message.macAddress,"NNRI:true");
             else communication->sendMsg(message.macAddress,"NNRI;false");
+
+            std::cout << "New Node" << std::endl;
         } else if(messageType == "NNRI"){ // New node Receives return node Information
             // NNRI;isLeader
             bool breakOut = false;
             for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
-                    breakOut = true;
-                    break;
-                }
+                if(node.macAddress == message.macAddress) breakOut = true;
+                if(breakOut) break;
             }
             if(breakOut) break;
 
             ActivityPlanner::nodeFriend tempNode = ActivityPlanner::nodeFriend();
             memcpy(tempNode.macAddress, message.macAddress, 6);
-            if(messageStr.substr(1,delimiterPos) == "false") tempNode.isLeader = false;
-            else if (messageStr.substr(1,delimiterPos) == "true") tempNode.isLeader = true;
+            if(messageStr.substr(1,delimiterPos) == "false") {
+                tempNode.isLeader = false;
+            }
+            else if (messageStr.substr(1,delimiterPos) == "true") {
+                tempNode.isLeader = true;
+                isStartUp = false;
+            }
 
             nodeFriends.push_back(tempNode);
+
+            std::cout << "New Node Received" << std::endl;
         } else if(messageType == "RC"){ // Route Complete
             if(isLeader){
                 uint8_t *address = 0;
@@ -197,31 +217,40 @@ void ActivityPlanner::processMsg(){
             //send to navigation.cpp
             
         } else if(messageType == "NL"){ // No Leader
-            isThereALeader = false;
-            int batteryLevel = trunc(energy->read().percentage);
-            std::string battery = "BP;" + batteryLevel;
-            communication->broadcastMsg(battery);
+            
         } else if(messageType == "BP"){ // Battery Percentage received
-            for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
-                    float battery = std::stof(messageStr.substr(1,delimiterPos));
-                    node.percentage = battery;
-                    break;
-                }
-            }
+            
         } else if(messageType == "PL"){ // node receives a Proposal to be Leader from another (receiver recives proposal, can accept or reject)
-            int proposedBattery = 0;
-            int battery = trunc(energy->read().percentage);
-            for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
-                    proposedBattery = node.percentage;
-                    break;
-                }
-            }
-            if(proposedBattery > battery) {
+            if(isStartUp){
+                bool breakOut = false;
                 communication->sendMsg(message.macAddress,"AL");
-            }else {
-                communication->sendMsg(message.macAddress,"RL");
+                /*
+                for(int i = 0; i < 6; i++){
+                    for(auto node : nodeFriends){
+                        if(communication->selfAddress[i] < node.macAddress[i]) {
+                            breakOut = true;
+                            break;
+                        }
+                        if(breakOut) break;
+                    }
+                    if(breakOut) break;
+                }*/
+            } else{
+                bool breakOut = false;
+                int proposedBattery = 0;
+                int battery = trunc(energy->read().percentage);
+                for(auto node : nodeFriends){
+                    if(node.macAddress == message.macAddress) {
+                        proposedBattery = node.percentage;
+                        break;
+                    }
+                    if(breakOut) break;
+                }
+                if(proposedBattery > battery) {
+                    communication->sendMsg(message.macAddress,"AL");
+                }else {
+                    communication->sendMsg(message.macAddress,"RL");
+                }
             }
 
         } else if(messageType == "AL"){ // node who proposed to be Leader recives Accept
@@ -247,7 +276,5 @@ void ActivityPlanner::processMsg(){
             isThereALeader = true;
             isStartUp = false;
         }
-        std::cout << "Processed message: " << messageStr << std::endl;
-        messages.pop_front();           // removes the first message from the list
     }
 }

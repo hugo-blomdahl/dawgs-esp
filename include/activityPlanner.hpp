@@ -47,6 +47,8 @@ class ActivityPlanner {
     Energy* energy;
     bool isLeader;
     bool isThereALeader;
+    bool proposeToBeLeader;
+    bool propose;
     bool broadcastedMAC;
     uint8_t leaderMACaddress[6];
     bool performingRoute; // changes when route is done
