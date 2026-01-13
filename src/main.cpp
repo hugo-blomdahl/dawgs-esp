@@ -63,7 +63,7 @@ void initWifi(){
     strncpy((char*)wifi_config.sta.ssid, wifi_ssid, sizeof(wifi_config.sta.ssid) - 1);
     strncpy((char*)wifi_config.sta.password, wifi_password, sizeof(wifi_config.sta.password) - 1);
     
-    //wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;    
+    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;    
     //måste inte vara utkommenterat
 
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));

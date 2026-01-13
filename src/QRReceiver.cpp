@@ -54,7 +54,7 @@ static void uart_reader_task(void* arg) {
 
                             if (planner != nullptr) {
                                 char logMsg[64];
-                                snprintf(logMsg, sizeof(logMsg), "QR detected: %d\n", qrIndex);
+                                snprintf(logMsg, sizeof(logMsg), "DET - ID Scanned: %d\n", qrIndex);
                                 planner->sendLog(logMsg);
                             }
 
