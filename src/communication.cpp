@@ -33,7 +33,23 @@ Comms::Comms() {
 }
 
 void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len){
-    MultiHopPacket* packet = (MultiHopPacket*)data;
+    // kontrollera så att datapaketet är i rätt format (Samma som i hpp filen)
+    // Om ej så ska vi ignorera meddelandet
+    //ESP_LOGW(TAG_COMMS, "len is the size %d", len);
+    
+    MultiHopPacket* packet = (MultiHopPacket*)data; 
+    if (packet->magic != 35) {
+        //ESP_LOGW(TAG_COMMS, "Invalid magic number: %d", packet->magic);
+        return; // Not our packet
+    }
+    ESP_LOGW(TAG_COMMS, "magic is the size %d", packet->magic);
+    ESP_LOGW(TAG_COMMS, "srcMAC is the size %02X", packet->srcMAC);
+    ESP_LOGW(TAG_COMMS, "dstMAC is the size %02X", packet->dstMAC);
+    ESP_LOGW(TAG_COMMS, "ttl is the size %d", packet->ttl);
+    ESP_LOGW(TAG_COMMS, "msgID is the size %d", packet->msgID);
+    ESP_LOGW(TAG_COMMS, "payloadLen is the size %d", packet->payloadLen);
+    ESP_LOGW(TAG_COMMS, "payload is the size %d", packet->payload);
+
     std::string msg(packet->payload, packet->payloadLen);  // Construct from pointer + length
     ESP_LOGI(TAG_COMMS, "Recieved %d bytes: %s", packet->payloadLen, msg.c_str());
     Message newMessage;
