@@ -11,12 +11,33 @@
 #include <esp_random.h>
 #include <list>
 #include <mutex>
-
+#include <algorithm>
+#define BUFFER_SIZE 45
 struct Message {
         uint8_t macAddress[6];
         std::string message;
     };
-
+class PacketHistory {
+        private:
+            uint16_t buffer[BUFFER_SIZE] = {0};
+            size_t head = 0;
+            bool full = false;
+            
+        public:
+            bool exists(uint16_t msgID) const {
+                size_t count = full ? BUFFER_SIZE : head;
+                for(size_t i=0; i<count; i++){
+                    if(buffer[i] == msgID) return true;
+                }
+                return false;
+            }
+            
+            void add(uint16_t msgID){
+                buffer[head] = msgID;
+                head = (head + 1) % BUFFER_SIZE;
+                if(head == 0) full = true;
+            }
+    };
 
 class Comms {
     private:
@@ -27,6 +48,8 @@ class Comms {
         std::list<Message>* messages = nullptr;
         static std::mutex listMutex;
         
+        PacketHistory packetHistory;
+        
 // Total: 15 bytes header + up to 235 bytes payload
 
     public:
@@ -35,9 +58,9 @@ class Comms {
             uint8_t srcMAC[6];      // Original sender (6 bytes)
             uint8_t dstMAC[6];      // Final destination (6 bytes)
             uint8_t ttl;            // Hops remaining (1 byte)
-            uint8_t msgID;          // Unique message ID (1 byte)
+            uint16_t msgID;          // Unique message ID (2 byte)
             uint8_t payloadLen;     // How long is the message? (1 byte)
-            char payload[235];      // Actual message (rest of 250 bytes)
+            char payload[234];      // Actual message (rest of 250 bytes)
         };
         int sendMsg(uint8_t* address, std::string message);
         void broadcastMsg(std::string message);
