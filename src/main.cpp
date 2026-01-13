@@ -62,7 +62,9 @@ void initWifi(){
     wifi_config_t wifi_config = {};
     strncpy((char*)wifi_config.sta.ssid, wifi_ssid, sizeof(wifi_config.sta.ssid) - 1);
     strncpy((char*)wifi_config.sta.password, wifi_password, sizeof(wifi_config.sta.password) - 1);
-    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;    
+    
+    //wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;    
+    //måste inte vara utkommenterat
 
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
 
@@ -79,11 +81,10 @@ extern "C" void app_main(void) {
     comms.broadcastMsg("hello world!");
     Navigation navigation;
     navigation.loadEmbeddedMap();
-    startUARTReader(&navigation);
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
-    TcpClient* loggClient = new TcpClient("10.237.14.86", 1234, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* loggClient = new TcpClient("10.225.44.86", 1234, wifi_event_group, WIFI_CONNECTED_BIT);
     TcpClient* visualClient = new TcpClient("10.106.78.81", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
@@ -93,13 +94,15 @@ extern "C" void app_main(void) {
     //activityPlanner->sendLog("test\n");       //send to logg
     //activityPlanner->sendVisual("test\n");    //send to visual
     
+    startUARTReader(&navigation, activityPlanner);
+
 
     ESP_LOGI(TAG, "All components started");
 
     while(true) {
         activityPlanner->state_machine_();
         vTaskDelay(pdMS_TO_TICKS(1000));
-            activityPlanner->sendLog("test\n");       //send to logg
+        //    activityPlanner->sendLog("test\n");       //send to logg
 
     }
 }
