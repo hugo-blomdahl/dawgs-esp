@@ -11,9 +11,10 @@ const char* TAG_NAVI = "Navi";
 // Konstruktor
 Navigation::Navigation(Movement* movement)
 : movementController(movement),
+  // Byt ordning på dessa så de matchar .h-filen:
+  currentRouteLength(0), // Denna måste komma före pathIndex
   activeRouteType(0),
-  currentPathIndex(0),
-  currentRouteLength(0)
+  currentPathIndex(0)
 {
 }
 
