@@ -18,6 +18,10 @@ Navigation::Navigation(Movement* movement)
 {
 }
 
+void Navigation::setVisualClient(TcpClient* client) {
+    this->visualClient = client;
+}
+
 bool Navigation::loadEmbeddedMap() {
     if (map_json_len == 0) {
         ESP_LOGE(TAG_NAVI, "Embedded map är tom!");
@@ -177,13 +181,21 @@ void Navigation::executePathSequence(const std::vector<NavAction>& actions) {
 
     for (const auto& action : actions) {
         
-        movementController->setSpeed(50); 
+        int speedVal = 50;
+        movementController->setSpeed(speedVal); 
+        if (visualClient) {
+            std::string msg = "speed:" + std::to_string(speedVal) + "\n";
+            visualClient->sendString(msg);
+        }
         
         const float SIM_STEP_M = 0.1f;    
         const int STEP_DELAY_MS = 100;    
 
         if (action.type == ACTION_FORWARD) {
             ESP_LOGI(TAG_NAVI, "EXEC: Framåt %.2f m", action.value);
+            
+            if (visualClient) visualClient->sendString("forward\n");
+
             float dist = 0;
             while(dist < action.value) {
                 movementController->moveForward();
@@ -193,6 +205,9 @@ void Navigation::executePathSequence(const std::vector<NavAction>& actions) {
 
         } else if (action.type == ACTION_BACKWARD) {
             ESP_LOGI(TAG_NAVI, "EXEC: Bakåt %.2f m", action.value);
+
+            if (visualClient) visualClient->sendString("backward\n");
+
             float dist = 0;
             while(dist < action.value) {
                 movementController->moveBackward();
@@ -202,10 +217,18 @@ void Navigation::executePathSequence(const std::vector<NavAction>& actions) {
 
         } else if (action.type == ACTION_ROTATE) {
             ESP_LOGI(TAG_NAVI, "EXEC: Rotera %.2f grader", action.value);
+            
+            if (visualClient) {
+                std::string msg = "rotation:" + std::to_string(action.value) + "\n";
+                visualClient->sendString(msg);
+            }
+
             movementController->rotate(action.value);
             vTaskDelay(pdMS_TO_TICKS(1000)); 
         }
 
+        if (visualClient) visualClient->sendString("standby\n");
+        
         movementController->standby();
         vTaskDelay(pdMS_TO_TICKS(200)); 
     }

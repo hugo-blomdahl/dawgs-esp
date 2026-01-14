@@ -93,6 +93,8 @@ extern "C" void app_main(void) {
     loggClient->start();
     visualClient->start();
 
+    navigation.setVisualClient(visualClient);
+
     ActivityPlanner* activityPlanner = new ActivityPlanner(&comms, loggClient, visualClient);
     //activityPlanner->sendLog("test\n");       //send to logg
     //activityPlanner->sendVisual("test\n");    //send to visual

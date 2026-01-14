@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "cJSON.h" 
 #include "movement.hpp" 
+#include "tcpClient.hpp"
 
 enum ActionType {
     ACTION_FORWARD,  // "F"
@@ -29,6 +30,8 @@ class Navigation {
     private:
         Movement* movementController;
 
+        TcpClient* visualClient = nullptr;
+
         std::vector<SimpleNode> mapNodes;
         
         static const int MAX_ROUTE_CAPACITY = 100; 
@@ -45,6 +48,8 @@ class Navigation {
 
     public:
         Navigation(Movement* movement);
+
+        void setVisualClient(TcpClient* client);
 
         bool loadEmbeddedMap();
         bool loadMapFromJson(const std::string& jsonString);
