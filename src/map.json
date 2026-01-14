@@ -1,24 +1,748 @@
 {
   "meta": {
     "unit": "m",
-    "north_deg": 0
+    "north_deg": 90,
+    "clock_wise": "negative deg"
   },
   "nodes": [
     {
-      "id": "R1_NAV_S",
-      "x": 3.5,
-      "y": 0.5,
-      "heading": 0.0,
-      "type": "nav",
-      "room": "1"
-    },  
+      "id": 0,
+      "nextIndex": 1
+    },
     {
-      "id": "dinMamma",
-      "x": 5,
-      "y": 3.5,
-      "heading": 90.0,
-      "type": "skulptur",
-      "room": "1"
-    }   
+      "id": 1,
+      "nextIndex": 2
+    },
+    {
+      "id": 2,
+      "nextIndex": 3
+    },
+    {
+      "id": 3,
+      "nextIndex": 4
+    },
+    {
+      "id": 4,
+      "nextIndex": 5
+    },
+    {
+      "id": 5,
+      "nextIndex": 6
+    },
+    {
+      "id": 6,
+      "nextIndex": 7
+    },
+    {
+      "id": 7,
+      "nextIndex": 8
+    },
+    {
+      "id": 8,
+      "nextIndex": 9
+    },
+    {
+      "id": 9,
+      "nextIndex": 10,
+      "previousRoute5Index": 51,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -180 }
+      ],
+      "pathRout65": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -180 }
+      ]
+    },
+    {
+      "id": 10,
+      "nextIndex": 10,
+      "nextRoute5Index": 11,
+      "nextRoute6Index": 52,
+      "previousIndex": 9,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.5 }
+      ],
+      "pathRoute6": [
+        { "do": "F", "val": 1.0 },
+        { "do": "R", "val": -90.0 },
+        { "do": "F", "val": 2.5 }
+      ],
+      "pathLaddstation": [
+        { "do": "B", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 11,
+      "nextIndex": 12,
+      "previousIndex": 10,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 0.5 },
+        { "do": "R", "val": 90.0 },
+        { "do": "F", "val": 0.5 },
+        { "do": "R", "val": -90.0 },
+        { "do": "F", "val": 0.75 }
+      ]
+    },
+    {
+      "id": 12,
+      "art": "The Seated Scribe",
+      "nextIndex": 13,
+      "previousIndex": 11,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 0.75 },
+        { "do": "R", "val": 90.0 },
+        { "do": "F", "val": 0.5 }
+      ]
+    },
+    {
+      "id": 13,
+      "nextIndex": 13,
+      "previousIndex": 11,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.5 }
+      ]
+    },
+    {
+      "id": 14,
+      "nextIndex": 15,
+      "previousIndex": 13,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 0.5 },
+        { "do": "R", "val": 90.0 },
+        { "do": "F", "val": 0.5 }
+      ]
+    },
+    {
+      "id": 15,
+      "nextIndex": 16,
+      "previousIndex": 14,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 16,
+      "nextIndex": 17,
+      "previousIndex": 15,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 17,
+      "nextIndex": 18,
+      "previousIndex": 16,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 18,
+      "nextIndex": 19,
+      "previousIndex": 17,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "R", "val": 90.0 },
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 19,
+      "nextIndex": 20,
+      "previousIndex": 18,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -90.0 },
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 20,
+      "art": "Diana of Versailles",
+      "nextIndex": 21,
+      "previousIndex": 19,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -90.0 },
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 21,
+      "nextIndex": 22,
+      "previousIndex": 20,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": 90.0 }
+      ]
+    },
+    {
+      "id": 22,
+      "nextIndex": 23,
+      "previousIndex": 21,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 23,
+      "nextIndex": 24,
+      "previousIndex": 22,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 24,
+      "nextIndex": 25,
+      "previousIndex": 23,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 25,
+      "nextIndex": 26,
+      "previousIndex": 24,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 26,
+      "nextIndex": 27,
+      "previousIndex": 25,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 27,
+      "nextIndex": 28,
+      "previousIndex": 26,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 28,
+      "nextIndex": 29,
+      "previousIndex": 27,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 29,
+      "nextIndex": 30,
+      "previousIndex": 28,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 30,
+      "nextIndex": 31,
+      "previousIndex": 29,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 31,
+      "nextIndex": 32,
+      "previousIndex": 30,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 32,
+      "heading": 0.0,
+      "nextIndex": 33,
+      "previousIndex": 31,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 33,
+      "heading": 0.0,
+      "nextIndex": 34,
+      "previousIndex": 32,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -90 },
+        { "do": "F", "val": 1.0 }
+      ]
+    },
+    {
+      "id": 34,
+      "art": "Dying Slave",
+      "nextIndex": 35,
+      "previousIndex": 33,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.0 },
+        { "do": "R", "val": -90 },
+        { "do": "F", "val": 1.0 },
+        { "do": "R", "val": 90 }
+      ]
+    },
+    {
+      "id": 35,
+      "nextIndex": 36,
+      "previousIndex": 34,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.0 },
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 0.5 }
+      ]
+    },
+    {
+      "id": 34,
+      "nextIndex": 35,
+      "previousIndex": 33,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 35,
+      "nextIndex": 36,
+      "previousIndex": 34,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": 90 }
+      ]
+    },
+    {
+      "id": 36,
+      "nextIndex": 37,
+      "previousIndex": 35,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 37,
+      "nextIndex": 38,
+      "previousIndex": 36,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": 90 }
+      ]
+    },
+    {
+      "id": 38,
+      "nextIndex": 39,
+      "previousIndex": 37,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 39,
+      "nextIndex": 40,
+      "previousIndex": 38,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 40,
+      "nextIndex": 41,
+      "previousIndex": 39,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 41,
+      "nextIndex": 42,
+      "previousIndex": 40,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 42,
+      "nextIndex": 43,
+      "previousIndex": 41,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 43,
+      "nextIndex": 44,
+      "previousIndex": 42,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 44,
+      "nextIndex": 45,
+      "previousIndex": 43,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 45,
+      "nextIndex": 46,
+      "previousIndex": 44,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 46,
+      "art": "Dendera zodiac",
+      "nextIndex": 47,
+      "previousIndex": 45,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 47,
+      "nextIndex": 48,
+      "previousIndex": 46,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 48,
+      "nextIndex": 49,
+      "previousIndex": 47,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 49,
+      "nextIndex": 50,
+      "previousIndex": 48,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.5 }
+      ]
+    },
+    {
+      "comment":"kör in i laddstation",
+      "id": 50,
+      "nextIndex": 51,
+      "previousIndex": 49,
+      "room": "5",
+      "pathRoute5": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 51,
+      "comment":"ignorera till M4",
+      "nextIndex": 9,
+      "previousIndex": 50,
+      "room": "5",
+      "path": [
+        { "do": "F", "val": 3.5 }
+      ]
+    },
+    {
+      "id": 52,
+      "nextIndex": 53,
+      "previousIndex": 10,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -90 },
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 53,
+      "nextIndex": 54,
+      "previousIndex": 52,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 54,
+      "art": "The Arrival of Marie de Medici at Marseille",
+      "nextIndex": 55,
+      "previousIndex": 53,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 55,
+      "nextIndex": 56,
+      "previousIndex": 54,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 0.5 },
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 0.5 }
+      ]
+    },
+    {
+      "id": 56,
+      "nextIndex": 57,
+      "previousIndex": 55,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 57,
+      "nextIndex": 58,
+      "previousIndex": 56,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 58,
+      "nextIndex": 59,
+      "previousIndex": 57,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 59,
+      "nextIndex": 60,
+      "previousIndex": 58,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 60,
+      "nextIndex": 61,
+      "previousIndex": 59,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 61,
+      "nextIndex": 62,
+      "previousIndex": 60,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 62,
+      "nextIndex": 63,
+      "previousIndex": 61,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 2.5 }
+      ]
+    },
+    {
+      "id": 63,
+      "nextIndex": 64,
+      "previousIndex": 62,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 64,
+      "art": "The Raft of the Medusa",
+      "nextIndex": 65,
+      "previousIndex": 63,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 65,
+      "nextIndex": 66,
+      "previousIndex": 64,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 66,
+      "nextIndex": 67,
+      "previousIndex": 65,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 67,
+      "nextIndex": 68,
+      "previousIndex": 66,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 0.5 },
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 68,
+      "nextIndex": 69,
+      "previousIndex": 67,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 69,
+      "nextIndex": 70,
+      "previousIndex": 68,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 70,
+      "art": "The Coronation of Napoleon",
+      "nextIndex": 71,
+      "previousIndex": 69,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 71,
+      "nextIndex": 72,
+      "previousIndex": 70,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.5 }
+      ]
+    },
+    {
+      "id": 72,
+      "nextIndex": 73,
+      "previousIndex": 71,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 73,
+      "nextIndex": 74,
+      "previousIndex": 72,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 3.0 }
+      ]
+    },
+    {
+      "id": 74,
+      "nextIndex": 75,
+      "previousIndex": 73,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "R", "val": 90 },
+        { "do": "F", "val": 1.0 }
+      ]
+    },
+    {
+      "id": 75,
+      "nextIndex": 76,
+      "previousIndex": 74,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.0 },
+        { "do": "R", "val": -90 },
+        { "do": "F", "val": 2.5 }
+      ]
+    },
+    {
+      "id": 76,
+      "nextIndex": 77,
+      "previousIndex": 75,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -90 },
+        { "do": "B", "val": 2.0 }
+      ]
+    },
+    {
+      "id": 77,
+      "nextIndex": 8,
+      "previousIndex": 76,
+      "room": "5",
+      "pathRoute6": [
+        { "do": "B", "val": 1.0 },
+        { "do": "R", "val": 90 },
+        { "do": "B", "val": 1.0 }
+      ]
+    }
   ]
 }

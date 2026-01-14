@@ -11,6 +11,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
+#include <cstring>
 
 static const char *TAG = "MAIN";
 static const char *wifi_ssid = "Lill-klumpen";
@@ -80,10 +81,11 @@ void initWifi(){
 extern "C" void app_main(void) {
     initWifi(); //must be done early!!
 
-    Comms comms;
-    comms.broadcastMsg("hello world!");
-    Navigation navigation;
-    navigation.loadEmbeddedMap();
+    Comms* comms = new Comms;
+    comms->broadcastMsg("hello world!");
+    Movement* movement =new Movement;
+    Navigation* navigation = new Navigation(movement); 
+    navigation->loadEmbeddedMap();
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
@@ -93,11 +95,22 @@ extern "C" void app_main(void) {
     loggClient->start();
     visualClient->start();
 
-    ActivityPlanner* activityPlanner = new ActivityPlanner(&comms, loggClient, visualClient);
+    navigation->setVisualClient(visualClient);
+
+   // const int ROUTE_LEN = 42;
+    //int testRoute[ROUTE_LEN]; 
+
+   // for(int i = 0; i < ROUTE_LEN; i++) {
+   //     testRoute[i] = 9 + i;
+   // }
+
+   // navigation->setRoute(5, testRoute, ROUTE_LEN);
+
+    ActivityPlanner* activityPlanner = new ActivityPlanner(comms, loggClient, visualClient);
     //activityPlanner->sendLog("test\n");       //send to logg
     //activityPlanner->sendVisual("test\n");    //send to visual
     
-    startUARTReader(&navigation, activityPlanner);
+    startUARTReader(navigation, activityPlanner);
 
 
     ESP_LOGI(TAG, "All components started");

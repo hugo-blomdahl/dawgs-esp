@@ -1,4 +1,6 @@
 #include "communication.hpp"
+#include <cstring> 
+#include <string>
 
 Comms* Comms::instance = nullptr;
 std::mutex Comms::listMutex;
