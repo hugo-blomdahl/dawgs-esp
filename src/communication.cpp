@@ -81,7 +81,7 @@ int Comms::sendMsg(uint8_t* address, std::string message){
     memcpy(packet.payload, message.c_str(), packet.payloadLen);
 
 
-    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+15);  //15 for packet structure
+    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+16);  //16 for packet structure
     if (err != ESP_OK) {
         ESP_LOGE(TAG_COMMS, "esp_now_send failed: %s", esp_err_to_name(err));
         return err;
