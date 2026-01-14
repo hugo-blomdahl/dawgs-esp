@@ -44,7 +44,7 @@ class Navigation {
         void executePathSequence(const std::vector<NavAction>& actions);
 
     public:
-        Navigation(Movement* moveCtrl);
+        Navigation(Movement* movement);
 
         bool loadEmbeddedMap();
         bool loadMapFromJson(const std::string& jsonString);
