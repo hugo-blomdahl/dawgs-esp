@@ -1,4 +1,6 @@
 #pragma once
 #include "navigation.h"
 
-void startUARTReader(Navigation* navigation);
+class ActivityPlanner;
+
+void startUARTReader(Navigation* navigation, ActivityPlanner* activityPlanner);
