@@ -13,8 +13,8 @@
 #define UART_RX_PIN     5
 #define UART_RX_BUF_SZ  1024
 #define READ_CHUNK_SZ   256
-static const char *TAG_QR_RECEIVER = "QR_RECV";
 
+static const char *TAG_QR_RECEIVER = "QR_RECV";
 
 struct UartContext {
     Navigation* nav;
@@ -26,7 +26,7 @@ static void uart_reader_task(void* arg) {
     UartContext* ctx = static_cast<UartContext*>(arg); // 1. Packa upp lådan
     Navigation* navigation = ctx->nav;                 // 2. Hämta nav
     ActivityPlanner* planner = ctx->planner;           // 3. Hämta planner
-    delete ctx;                                        // 4. Kasta lådan (frigör minne
+    delete ctx;                                        // 4. Kasta lådan (frigör minne)
 
     uint8_t* buf = (uint8_t*) malloc(READ_CHUNK_SZ);
     if (!buf) { 
@@ -46,18 +46,32 @@ static void uart_reader_task(void* arg) {
                     if (!line.empty()) {
                         int qrIndex = 0;
                         auto [ptr, ec] = std::from_chars(line.data(), line.data() + line.size(), qrIndex);
+                        
                         if (ec == std::errc::invalid_argument) {
                             ESP_LOGE(TAG_QR_RECEIVER, "QR ID '%s' är ej ett giltigt heltal.", line.c_str());
                         } else if (ec == std::errc::result_out_of_range) {
                             ESP_LOGE(TAG_QR_RECEIVER, "QR ID '%s' är utom omfång för int.", line.c_str());
                         } else {
-
-                            if (planner != nullptr) {
-                                char logMsg[64];
-                                snprintf(logMsg, sizeof(logMsg), "DET - ID Scanned: %d\n", qrIndex);
-                                planner->sendLog(logMsg);
+                            
+                            // hämta art info
+                            std::string artName = "";
+                            if (navigation != nullptr) {
+                                artName = navigation->getNodeArt(qrIndex);
                             }
 
+                            // skicka logg
+                            if (planner != nullptr) {
+                                char logMsg[128];
+
+                                if (artName.empty()) {
+                                    snprintf(logMsg, sizeof(logMsg), "NAV - QR %d Scanned (Calibration)\n", qrIndex);
+                                } else {
+                                    snprintf(logMsg, sizeof(logMsg), "DET - QR %d Scanned (%s)\n", qrIndex, artName.c_str());
+                                }
+                                
+                                planner->sendLog(logMsg);
+                            }
+                            
                             navigation->calibrateFromQR(qrIndex);
                         }
 
