@@ -11,6 +11,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
+#include <cstring>
 
 static const char *TAG = "MAIN";
 static const char *wifi_ssid = "Lill-klumpen";
@@ -80,7 +81,8 @@ extern "C" void app_main(void) {
 
     Comms comms;
     comms.broadcastMsg("hello world!");
-    Navigation navigation;
+    Movement movement;
+    Navigation navigation(&movement); 
     navigation.loadEmbeddedMap();
     
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
