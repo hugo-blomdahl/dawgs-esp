@@ -28,10 +28,10 @@ Energy::Energy()
 // Initialize ADC settings - runs at system startup
 void Energy::begin() {
     ESP_LOGI(TAG, "Energy system initialized.");
-    ESP_LOGI(TAG, "Starting battery percentage: %.2f%%", batteryPercentage);
-    ESP_LOGI(TAG, "Active mode: %.2f minutes remaining at 100 %% at start.", ACTIVE_LIFETIME);
-    ESP_LOGI(TAG, "Low power mode: %.2f minutes remaining at 100 %% at start.", LOW_POWER_LIFETIME);
-    ESP_LOGI(TAG, "Charging time: %.2f minutes from 0 %% to 100%%.", CHARGE_TIME);
+    ESP_LOGI(TAG, "Starting battery percentage: %.2f%%", (double)batteryPercentage);
+    ESP_LOGI(TAG, "Active mode: %.2f minutes remaining at 100 %% at start.", (double)ACTIVE_LIFETIME);
+    ESP_LOGI(TAG, "Low power mode: %.2f minutes remaining at 100 %% at start.", (double)LOW_POWER_LIFETIME);
+    ESP_LOGI(TAG, "Charging time: %.2f minutes from 0 %% to 100%%.", (double)CHARGE_TIME);
 }
 
 // Reads battery status and returns it as a struct
@@ -89,7 +89,7 @@ void Energy::setMode(BatteryMode mode) {
 void Energy::startCharging() {
     isCharging = true;                // Set charging flag
     currentMode = BatteryMode::CHARGING; // Switch to charging mode
-    ESP_LOGI(TAG, "Charging started at %.1f%%", batteryPercentage);
+    ESP_LOGI(TAG, "Charging started at %.1f%%", (double)batteryPercentage);
 }
 
 // Stops the charging process
@@ -97,7 +97,7 @@ void Energy::stopCharging() {
     isCharging = false;               // Clear charging flag
     // Return to active mode as default when charging stops
     currentMode = BatteryMode::ACTIVE;
-    ESP_LOGI(TAG, "Charging stopped at %.1f%%", batteryPercentage);
+    ESP_LOGI(TAG, "Charging stopped at %.1f%%", (double)batteryPercentage);
 }
 
 // Updates battery status based on elapsed time
@@ -116,7 +116,7 @@ void Energy::update(float deltaTimeMinutes) {
         }
         
         // Log charging progress for debugging
-        ESP_LOGD(TAG, "Charging: +%.3f%% -> %.1f%%", chargeAmount, batteryPercentage);
+        ESP_LOGD(TAG, "Charging: +%.3f%% -> %.1f%%", (double)chargeAmount, (double)batteryPercentage);
     } else {
         // Discharging logic based on current mode
         // Calculate consumption rate: percentage per minute
@@ -134,7 +134,7 @@ void Energy::update(float deltaTimeMinutes) {
         }
         
         // Log discharging progress for debugging
-        ESP_LOGD(TAG, "Discharging: -%.3f%% -> %.1f%%", dischargeAmount, batteryPercentage);
+        ESP_LOGD(TAG, "Discharging: -%.3f%% -> %.1f%%", (double)dischargeAmount, (double)batteryPercentage);
     }
     
     // Check if charging is needed based on warning threshold
@@ -211,8 +211,8 @@ void Energy::checkChargingWarning() {
     // If less than warning threshold and not already charging, issue warning
     if (remainingActiveMinutes < WARNING_THRESHOLD && !isCharging) {
         ESP_LOGW(TAG, "BATTERY WARNING: Only %.1f minutes remaining in active mode!", 
-                remainingActiveMinutes);
-        ESP_LOGW(TAG, "Please charge the battery (current: %.1f%%)", batteryPercentage);
+                (double)remainingActiveMinutes);
+        ESP_LOGW(TAG, "Please charge the battery (current: %.1f%%)", (double)batteryPercentage);
     }
 }
 
