@@ -35,6 +35,7 @@ Comms::Comms() {
 void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len){
     
     MultiHopPacket* packet = (MultiHopPacket*)data; 
+    //Filtering packets that are not meant for us could be done here
     if (packet->magic != 35) {
         return; // Not our packet
     }
