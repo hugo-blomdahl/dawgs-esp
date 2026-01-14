@@ -12,8 +12,8 @@
 #include "esp_netif.h"
 
 static const char *TAG = "MAIN";
-static const char *wifi_ssid = "test";
-static const char *wifi_password = "test2";
+static const char *wifi_ssid = "Gabriels Iphone SE 2";
+static const char *wifi_password = "1234Abcd";
 
 EventGroupHandle_t wifi_event_group;
 const int WIFI_CONNECTED_BIT = BIT0;
@@ -68,6 +68,8 @@ void initWifi(){
 
 
     ESP_ERROR_CHECK(esp_wifi_start());
+
+    esp_wifi_set_ps(WIFI_PS_NONE);
 
     ESP_LOGI(TAG, "Global WiFi initialized");
 }

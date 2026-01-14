@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <list>
 #include <cmath>
 #include <esp_timer.h>

@@ -18,6 +18,6 @@ Energy::BatteryStatus Energy::read() { // Method to read battery status
     return batteryLevel;
 }
 
-float readVoltage() { // Method to read voltage
+float Energy::readVoltage() { // Method to read voltage
     return 0.0f;
 }

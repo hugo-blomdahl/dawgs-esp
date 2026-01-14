@@ -45,6 +45,7 @@ void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data
     Message newMessage;
     memcpy(newMessage.macAddress, packet->srcMAC, 6);
     newMessage.message = msg;
+    const std::lock_guard<std::mutex> lock(listMutex);
     instance->messages->push_back(newMessage);
     //ESP_LOGI(TAG_COMMS, "ATTEMPTING TO READ info: %02X", recv_info->src_addr[0]);
 }
@@ -80,18 +81,20 @@ int Comms::sendMsg(uint8_t* address, std::string message){
     memcpy(packet.payload, message.c_str(), packet.payloadLen);
 
 
-    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+15);  //15 for packet structure
+    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+16);  //16 for packet structure
     if (err != ESP_OK) {
         ESP_LOGE(TAG_COMMS, "esp_now_send failed: %s", esp_err_to_name(err));
         return err;
     }
 
+    std::cout << "sent message: " << message << std::endl;
     return ESP_OK;
 }
 }
 void Comms::broadcastMsg(std::string message){
     uint8_t broadcastAddress[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
     sendMsg(broadcastAddress, message);
+    std::cout << "Broadcasted message: " << message << std::endl;
 }
 
 void Comms::setMessageList(std::list<Message>* messageList){

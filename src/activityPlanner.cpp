@@ -35,8 +35,8 @@ void ActivityPlanner::state_machine_(){
     timeSinceStartUp = esp_timer_get_time() - timeAtStartUp;
     //if(isLeader) std::cout << "isLeader: " << std::endl;
 
-    std::cout << "size: " << nodeFriends.size() << ", isStartUp: " << isStartUp << ", broadcastedMAC: " << broadcastedMAC <<std::endl;
-
+    std::cout << "size: " << nodeFriends.size() << ", isStartUp: " << isStartUp << ", broadcastedMAC: " << broadcastedMAC << ", propose: " << propose << ", proposeL: " << proposeToBeLeader <<std::endl;
+    
     //update data
     
     // ToDo: check detection
@@ -66,38 +66,37 @@ void ActivityPlanner::state_machine_(){
              // ToDo
             // if start up: find the mac address with lowest value and set leader
             // else: broadcast battery level to all other nodes: check battery level, if same with 2 or more check again with MAC-address
-            if(isStartUp && !broadcastedMAC && timeSinceStartUp >= 5*1000*1000){
+            if(isStartUp && !broadcastedMAC && timeSinceStartUp >= 10*1000*1000){
                 communication->broadcastMsg("NN");
                 broadcastedMAC = true;
-            }if(isStartUp && broadcastedMAC && propose && timeSinceStartUp >= 15*1000*1000){
-                propose = false;
-                for(int i = 0; i < 6; i++){
-                    for(auto node : nodeFriends){
-                        if(communication->selfAddress[i] < node.macAddress[i]) {
-                            propose = true;
-                        }
-                        else {
-                            propose = false;
-                        }
-                        if(!propose) break;
-                    }
-                    if(propose) {
-                        communication->broadcastMsg("PL");
-                        proposeToBeLeader = true;
-                        break;
-                    } else {
-                        break;
+            }if(isStartUp && broadcastedMAC && propose && timeSinceStartUp >= 20*1000*1000){
+                
+                propose = true; // Antag att vi är ledare
+
+                for(auto& node : nodeFriends){
+                    // memcmp returnerar > 0 om selfAddress är större än node.macAddress
+                    if(memcmp(communication->selfAddress, node.macAddress, 6) > 0){
+                        // Vi hittade någon som är mindre än oss. Vi är inte ledare.
+                        propose = false;
+                        break; // Avbryt direkt, vi behöver inte kolla fler
                     }
                 }
-                propose = false;
-            }if(isStartUp && broadcastedMAC && proposeToBeLeader && timeSinceStartUp > 25*1000*1000 ){
+
+                if(propose) {
+                    communication->broadcastMsg("PL");
+                    proposeToBeLeader = true;
+                }
+                propose = false; // Förhindra att vi kör detta block igen
+            }if(isStartUp && proposeToBeLeader && timeSinceStartUp >= 30*1000*1000 ){
                 bool breakOut = false;
                 for(auto node : nodeFriends){
+                    std::cout << "accept: " << node.accept <<std::endl;
                     if(!node.accept){
                         breakOut = true;
                         break;
                     }
                 }
+                std::cout << "breakOut: " << breakOut<<std::endl;
                 if(!breakOut) {
                     isLeader = true;
                     proposeToBeLeader = false;
@@ -145,12 +144,12 @@ void ActivityPlanner::sendVisual(std::string log){
 
 
 void ActivityPlanner::processMsg(){
-    //std::lock_guard<std::mutex> lock(communication->getMutex());
+    std::lock_guard<std::mutex> lock(communication->getMutex());
     while(!messages.empty()){
         
         Message message = messages.front();    // pops the first message from the list
-        messages.pop_front();           // removes the first message from the list
         std::string messageStr = message.message;               // saves the message data
+        messages.pop_front();           // removes the first message from the list
 
         std::cout << "Processed message: " << messageStr << std::endl;
 
@@ -167,12 +166,11 @@ void ActivityPlanner::processMsg(){
 
         if(messageType == "NN"){ // existing node to register New Node
             // NN;isLeader
-            bool breakOut = false;
             for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) breakOut = true;
-                if(breakOut) break;
+                if(std::ranges::equal(node.macAddress,message.macAddress)){
+                    return;
+                }
             }
-            if(breakOut) break;
 
             ActivityPlanner::nodeFriend tempNode = ActivityPlanner::nodeFriend();
             memcpy(tempNode.macAddress, message.macAddress, 6);
@@ -185,12 +183,11 @@ void ActivityPlanner::processMsg(){
             std::cout << "New Node" << std::endl;
         } else if(messageType == "NNRI"){ // New node Receives return node Information
             // NNRI;isLeader
-            bool breakOut = false;
             for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) breakOut = true;
-                if(breakOut) break;
+                if(std::ranges::equal(node.macAddress,message.macAddress)){
+                    return;
+                }
             }
-            if(breakOut) break;
 
             ActivityPlanner::nodeFriend tempNode = ActivityPlanner::nodeFriend();
             memcpy(tempNode.macAddress, message.macAddress, 6);
@@ -239,7 +236,7 @@ void ActivityPlanner::processMsg(){
                 bool breakOut = false;
                 int proposedBattery = 0;
                 int battery = trunc(energy->read().percentage);
-                for(auto node : nodeFriends){
+                for(auto& node : nodeFriends){
                     if(node.macAddress == message.macAddress) {
                         proposedBattery = node.percentage;
                         break;
@@ -254,21 +251,23 @@ void ActivityPlanner::processMsg(){
             }
 
         } else if(messageType == "AL"){ // node who proposed to be Leader recives Accept
-            for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
+            for(auto& node : nodeFriends){
+                if(std::ranges::equal(node.macAddress,message.macAddress)){
                     node.accept = true;
+                    std::cout << "AL" << std::endl;
                     break;
                 }
             }
         } else if(messageType == "RL"){ // node who proposed to be Leader recives Reject
-            for(auto node : nodeFriends){
-                if(node.macAddress == message.macAddress) {
+            for(auto& node : nodeFriends){
+                if(std::ranges::equal(node.macAddress,message.macAddress)){
                     node.accept = false;
+                    std::cout << "RL" << std::endl;
                     break;
                 }
             }
         } else if(messageType == "CL"){ // node recives info about Current (New) Leader
-            for(auto node : nodeFriends){
+            for(auto& node : nodeFriends){
                 if(node.macAddress == message.macAddress) node.isLeader = true;
                 else node.isLeader = false;
             }
@@ -277,4 +276,5 @@ void ActivityPlanner::processMsg(){
             isStartUp = false;
         }
     }
+    
 }
