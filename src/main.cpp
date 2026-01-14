@@ -72,6 +72,8 @@ void initWifi(){
 
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    esp_wifi_set_ps(WIFI_PS_NONE);
+
     ESP_LOGI(TAG, "Global WiFi initialized");
 }
 
