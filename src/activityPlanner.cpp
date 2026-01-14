@@ -237,7 +237,7 @@ void ActivityPlanner::processMsg(){
                 int proposedBattery = 0;
                 int battery = trunc(energy->read().percentage);
                 for(auto& node : nodeFriends){
-                    if(node.macAddress == message.macAddress) {
+                    if(std::ranges::equal(node.macAddress,message.macAddress)) {   
                         proposedBattery = node.percentage;
                         break;
                     }
@@ -268,7 +268,7 @@ void ActivityPlanner::processMsg(){
             }
         } else if(messageType == "CL"){ // node recives info about Current (New) Leader
             for(auto& node : nodeFriends){
-                if(node.macAddress == message.macAddress) node.isLeader = true;
+                if(std::ranges::equal(node.macAddress,message.macAddress)) node.isLeader = true;
                 else node.isLeader = false;
             }
             memcpy(leaderMACaddress,message.macAddress,6);
