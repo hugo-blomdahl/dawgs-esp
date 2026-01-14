@@ -6,6 +6,8 @@
 #include "driver/uart.h"
 #include "esp_log.h"
 
+#include "activityPlanner.hpp"
+
 #define UART_RX_PORT    UART_NUM_1
 #define UART_RX_BAUD    115200
 #define UART_RX_PIN     5
@@ -13,8 +15,19 @@
 #define READ_CHUNK_SZ   256
 static const char *TAG_QR_RECEIVER = "QR_RECV";
 
+
+struct UartContext {
+    Navigation* nav;
+    ActivityPlanner* planner;
+}; 
+
 static void uart_reader_task(void* arg) {
-    Navigation* navigation = static_cast<Navigation*>(arg);
+
+    UartContext* ctx = static_cast<UartContext*>(arg); // 1. Packa upp lådan
+    Navigation* navigation = ctx->nav;                 // 2. Hämta nav
+    ActivityPlanner* planner = ctx->planner;           // 3. Hämta planner
+    delete ctx;                                        // 4. Kasta lådan (frigör minne
+
     uint8_t* buf = (uint8_t*) malloc(READ_CHUNK_SZ);
     if (!buf) { 
         ESP_LOGE(TAG_QR_RECEIVER, "Kunde inte allokera buffert.");
@@ -38,6 +51,13 @@ static void uart_reader_task(void* arg) {
                         } else if (ec == std::errc::result_out_of_range) {
                             ESP_LOGE(TAG_QR_RECEIVER, "QR ID '%s' är utom omfång för int.", line.c_str());
                         } else {
+
+                            if (planner != nullptr) {
+                                char logMsg[64];
+                                snprintf(logMsg, sizeof(logMsg), "DET - ID Scanned: %d\n", qrIndex);
+                                planner->sendLog(logMsg);
+                            }
+
                             navigation->calibrateFromQR(qrIndex);
                         }
 
@@ -55,7 +75,7 @@ static void uart_reader_task(void* arg) {
     vTaskDelete(NULL);
 }
 
-void startUARTReader(Navigation* navigation) {
+void startUARTReader(Navigation* navigation, ActivityPlanner* activityPlanner) {
     uart_config_t uart_cfg = {};
     uart_cfg.baud_rate = UART_RX_BAUD;
     uart_cfg.data_bits = UART_DATA_8_BITS;
@@ -66,5 +86,7 @@ void startUARTReader(Navigation* navigation) {
     uart_param_config(UART_RX_PORT, &uart_cfg);
     uart_set_pin(UART_RX_PORT, UART_PIN_NO_CHANGE, UART_RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE); 
 
-    xTaskCreate(uart_reader_task, "uart_reader", 4096, navigation, 5, NULL);
+    UartContext* ctx = new UartContext{navigation, activityPlanner};
+
+    xTaskCreate(uart_reader_task, "uart_reader", 4096, ctx, 5, NULL);
 }

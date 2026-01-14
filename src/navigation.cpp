@@ -96,6 +96,7 @@ bool Navigation::loadMapFromJson(const std::string& jsonString) {
 void Navigation::calibrateFromQR(int qrIndex){ 
     if (qrIndex < 0 || qrIndex >= mapNodes.size()) {
         ESP_LOGE(TAG_NAVI, "Ogiltigt QR index %d. Utanför kartans område.", qrIndex);
+        ESP_LOGE(TAG_NAVI, "map size är %d", mapNodes.size());
         return;
     }
     
