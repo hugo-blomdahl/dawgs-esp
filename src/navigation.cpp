@@ -8,11 +8,9 @@
 
 const char* TAG_NAVI = "Navi";
 
-// Konstruktor
 Navigation::Navigation(Movement* movement)
 : movementController(movement),
-  // Byt ordning på dessa så de matchar .h-filen:
-  currentRouteLength(0), // Denna måste komma före pathIndex
+  currentRouteLength(0), 
   activeRouteType(0),
   currentPathIndex(0)
 {
@@ -181,7 +179,7 @@ void Navigation::executePathSequence(const std::vector<NavAction>& actions) {
 
     for (const auto& action : actions) {
         
-        int speedVal = 50;
+        int speedVal = 100;
         movementController->setSpeed(speedVal); 
         if (visualClient) {
             std::string msg = "speed:" + std::to_string(speedVal) + "\n";

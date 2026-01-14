@@ -47,10 +47,12 @@
       "previousRoute5Index": 51,
       "room": "5",
       "pathRoute5": [
-        { "do": "F", "val": 1.5 }
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -180 }
       ],
       "pathRout65": [
-        { "do": "F", "val": 1.5 }
+        { "do": "F", "val": 1.5 },
+        { "do": "R", "val": -180 }
       ]
     },
     {
