@@ -27,17 +27,18 @@ class Comms {
         std::list<Message>* messages = nullptr;
         static std::mutex listMutex;
         
-// Total: 15 bytes header + up to 235 bytes payload
+// Total: 16 bytes header + up to 234 bytes payload
 
     public:
         Comms();
         struct MultiHopPacket {
+            uint8_t magic = 35;    // Magic number to identify our packets (1 byte)
             uint8_t srcMAC[6];      // Original sender (6 bytes)
             uint8_t dstMAC[6];      // Final destination (6 bytes)
             uint8_t ttl;            // Hops remaining (1 byte)
             uint8_t msgID;          // Unique message ID (1 byte)
             uint8_t payloadLen;     // How long is the message? (1 byte)
-            char payload[235];      // Actual message (rest of 250 bytes)
+            char payload[234];      // Actual message (rest of 250 bytes)
         };
         int sendMsg(uint8_t* address, std::string message);
         void broadcastMsg(std::string message);

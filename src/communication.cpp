@@ -33,7 +33,14 @@ Comms::Comms() {
 }
 
 void Comms::onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len){
-    MultiHopPacket* packet = (MultiHopPacket*)data;
+    
+    MultiHopPacket* packet = (MultiHopPacket*)data; 
+    //Filtering packets that are not meant for us could be done here
+    if (packet->magic != 35) {
+        return; // Not our packet
+    }
+    ESP_LOGW(TAG_COMMS, "The magic number is: %d", packet->magic);
+
     std::string msg(packet->payload, packet->payloadLen);  // Construct from pointer + length
     ESP_LOGI(TAG_COMMS, "Recieved %d bytes: %s", packet->payloadLen, msg.c_str());
     Message newMessage;
@@ -74,7 +81,7 @@ int Comms::sendMsg(uint8_t* address, std::string message){
     memcpy(packet.payload, message.c_str(), packet.payloadLen);
 
 
-    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+15);  //15 for packet structure
+    esp_err_t err = esp_now_send(address, (uint8_t*)&packet, packet.payloadLen+16);  //16 for packet structure
     if (err != ESP_OK) {
         ESP_LOGE(TAG_COMMS, "esp_now_send failed: %s", esp_err_to_name(err));
         return err;
