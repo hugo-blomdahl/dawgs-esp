@@ -5,6 +5,7 @@
 #include <iostream>
 #include "communication.hpp"
 #include "activityPlanner.hpp"
+#include "energy.hpp"
 #include "tcpClient.hpp"
 #include "nvs_flash.h"
 #include "esp_log.h"
