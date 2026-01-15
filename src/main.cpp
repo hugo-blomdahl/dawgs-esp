@@ -90,21 +90,21 @@ extern "C" void app_main(void) {
     //ip addresses below refer to server address. change depending on what ip is given to the server(s) by the network
     TcpClient* testClient = new TcpClient("10.106.78.80", 8089, wifi_event_group, WIFI_CONNECTED_BIT);
     TcpClient* loggClient = new TcpClient("10.225.44.86", 1234, wifi_event_group, WIFI_CONNECTED_BIT);
-    TcpClient* visualClient = new TcpClient("10.106.78.81", 8079, wifi_event_group, WIFI_CONNECTED_BIT);
+    TcpClient* visualClient = new TcpClient("10.225.44.86", 3000, wifi_event_group, WIFI_CONNECTED_BIT);
     testClient->start();
     loggClient->start();
     visualClient->start();
 
     navigation->setVisualClient(visualClient);
 
-   // const int ROUTE_LEN = 42;
-    //int testRoute[ROUTE_LEN]; 
+   const int ROUTE_LEN = 42;
+   int testRoute[ROUTE_LEN]; 
 
-   // for(int i = 0; i < ROUTE_LEN; i++) {
-   //     testRoute[i] = 9 + i;
-   // }
+    for(int i = 0; i < ROUTE_LEN; i++) {
+        testRoute[i] = 9 + i;
+    }
 
-   // navigation->setRoute(5, testRoute, ROUTE_LEN);
+   navigation->setRoute(5, testRoute, ROUTE_LEN);
 
     ActivityPlanner* activityPlanner = new ActivityPlanner(comms, loggClient, visualClient);
     //activityPlanner->sendLog("test\n");       //send to logg
